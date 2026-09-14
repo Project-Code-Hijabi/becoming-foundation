@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          audience: string
+          body: string
+          created_at: string
+          created_by: string | null
+          id: string
+          is_published: boolean
+          publish_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          body: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          publish_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_published?: boolean
+          publish_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       attendee_badges: {
         Row: {
           created_at: string
@@ -55,6 +91,94 @@ export type Database = {
           },
         ]
       }
+      award_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_published: boolean
+          name: string
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          name: string
+          updated_at?: string
+          year?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          name?: string
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      award_recipients: {
+        Row: {
+          category_id: string
+          created_at: string
+          display_order: number
+          id: string
+          person_id: string | null
+          recipient_name: string | null
+          recognition_note: string | null
+          team_id: string | null
+        }
+        Insert: {
+          category_id: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          person_id?: string | null
+          recipient_name?: string | null
+          recognition_note?: string | null
+          team_id?: string | null
+        }
+        Update: {
+          category_id?: string
+          created_at?: string
+          display_order?: number
+          id?: string
+          person_id?: string | null
+          recipient_name?: string | null
+          recognition_note?: string | null
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "award_recipients_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "award_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "award_recipients_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "award_recipients_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "hackathon_teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       badge_scans: {
         Row: {
           id: string
@@ -73,6 +197,45 @@ export type Database = {
           scanned_at?: string
           scanned_user_id?: string
           scanner_user_id?: string
+        }
+        Relationships: []
+      }
+      becoming_entries: {
+        Row: {
+          body: string | null
+          created_at: string
+          entry_type: Database["public"]["Enums"]["becoming_entry_type"]
+          id: string
+          is_public: boolean
+          media_path: string | null
+          metadata: Json
+          title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          entry_type?: Database["public"]["Enums"]["becoming_entry_type"]
+          id?: string
+          is_public?: boolean
+          media_path?: string | null
+          metadata?: Json
+          title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          entry_type?: Database["public"]["Enums"]["becoming_entry_type"]
+          id?: string
+          is_public?: boolean
+          media_path?: string | null
+          metadata?: Json
+          title?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -113,6 +276,13 @@ export type Database = {
             columns: ["badge_id"]
             isOneToOne: false
             referencedRelation: "attendee_badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "check_ins_programme_item_fkey"
+            columns: ["programme_item_id"]
+            isOneToOne: false
+            referencedRelation: "programme_items"
             referencedColumns: ["id"]
           },
         ]
@@ -182,6 +352,119 @@ export type Database = {
           },
         ]
       }
+      dear_future_me: {
+        Row: {
+          content: string
+          created_at: string
+          deliver_at: string | null
+          delivered_at: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          deliver_at?: string | null
+          delivered_at?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          deliver_at?: string | null
+          delivered_at?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      hackathon_team_members: {
+        Row: {
+          created_at: string
+          display_order: number
+          full_name: string
+          id: string
+          photo_path: string | null
+          role: string | null
+          team_id: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          full_name: string
+          id?: string
+          photo_path?: string | null
+          role?: string | null
+          team_id: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          full_name?: string
+          id?: string
+          photo_path?: string | null
+          role?: string | null
+          team_id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "hackathon_team_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "hackathon_teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      hackathon_teams: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          is_finalist: boolean
+          is_published: boolean
+          logo_path: string | null
+          name: string
+          pitch_summary: string | null
+          pitch_url: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_finalist?: boolean
+          is_published?: boolean
+          logo_path?: string | null
+          name: string
+          pitch_summary?: string | null
+          pitch_url?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_finalist?: boolean
+          is_published?: boolean
+          logo_path?: string | null
+          name?: string
+          pitch_summary?: string | null
+          pitch_url?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount_kobo: number
@@ -243,6 +526,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      people: {
+        Row: {
+          bio: string | null
+          created_at: string
+          display_order: number
+          full_name: string
+          id: string
+          instagram: string | null
+          is_published: boolean
+          linkedin: string | null
+          organisation: string | null
+          person_type: Database["public"]["Enums"]["person_type"]
+          photo_path: string | null
+          title: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number
+          full_name: string
+          id?: string
+          instagram?: string | null
+          is_published?: boolean
+          linkedin?: string | null
+          organisation?: string | null
+          person_type?: Database["public"]["Enums"]["person_type"]
+          photo_path?: string | null
+          title?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          display_order?: number
+          full_name?: string
+          id?: string
+          instagram?: string | null
+          is_published?: boolean
+          linkedin?: string | null
+          organisation?: string | null
+          person_type?: Database["public"]["Enums"]["person_type"]
+          photo_path?: string | null
+          title?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
       }
       profile_privacy: {
         Row: {
@@ -354,6 +688,48 @@ export type Database = {
         }
         Relationships: []
       }
+      programme_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          ends_at: string | null
+          id: string
+          is_published: boolean
+          location: string | null
+          session_type: Database["public"]["Enums"]["session_type"]
+          starts_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          ends_at?: string | null
+          id?: string
+          is_published?: boolean
+          location?: string | null
+          session_type?: Database["public"]["Enums"]["session_type"]
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          ends_at?: string | null
+          id?: string
+          is_published?: boolean
+          location?: string | null
+          session_type?: Database["public"]["Enums"]["session_type"]
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       registrations: {
         Row: {
           accessibility_notes: string | null
@@ -406,6 +782,48 @@ export type Database = {
             columns: ["ticket_type_id"]
             isOneToOne: false
             referencedRelation: "ticket_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_speakers: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          person_id: string
+          programme_item_id: string
+          speaking_role: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          person_id: string
+          programme_item_id: string
+          speaking_role?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          person_id?: string
+          programme_item_id?: string
+          speaking_role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_speakers_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_speakers_programme_item_id_fkey"
+            columns: ["programme_item_id"]
+            isOneToOne: false
+            referencedRelation: "programme_items"
             referencedColumns: ["id"]
           },
         ]
@@ -498,6 +916,7 @@ export type Database = {
     Enums: {
       app_role: "super_admin" | "admin" | "staff" | "attendee" | "speaker"
       badge_status: "active" | "revoked"
+      becoming_entry_type: "reflection" | "memory" | "note" | "media" | "other"
       connection_status: "pending" | "accepted" | "declined" | "blocked"
       payment_status:
         | "pending"
@@ -505,7 +924,26 @@ export type Database = {
         | "failed"
         | "cancelled"
         | "refunded"
+      person_type:
+        | "speaker"
+        | "panelist"
+        | "fireside_guest"
+        | "special_guest"
+        | "grand_honoree"
+        | "host"
+        | "sponsor"
       registration_status: "pending" | "paid" | "cancelled" | "refunded"
+      session_type:
+        | "keynote"
+        | "panel"
+        | "fireside"
+        | "hackathon"
+        | "award"
+        | "networking"
+        | "break"
+        | "opening"
+        | "closing"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -635,6 +1073,7 @@ export const Constants = {
     Enums: {
       app_role: ["super_admin", "admin", "staff", "attendee", "speaker"],
       badge_status: ["active", "revoked"],
+      becoming_entry_type: ["reflection", "memory", "note", "media", "other"],
       connection_status: ["pending", "accepted", "declined", "blocked"],
       payment_status: [
         "pending",
@@ -643,7 +1082,28 @@ export const Constants = {
         "cancelled",
         "refunded",
       ],
+      person_type: [
+        "speaker",
+        "panelist",
+        "fireside_guest",
+        "special_guest",
+        "grand_honoree",
+        "host",
+        "sponsor",
+      ],
       registration_status: ["pending", "paid", "cancelled", "refunded"],
+      session_type: [
+        "keynote",
+        "panel",
+        "fireside",
+        "hackathon",
+        "award",
+        "networking",
+        "break",
+        "opening",
+        "closing",
+        "other",
+      ],
     },
   },
 } as const
