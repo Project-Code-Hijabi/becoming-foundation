@@ -14,16 +14,157 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profile_privacy: {
+        Row: {
+          created_at: string
+          networking_enabled: boolean
+          profile_discoverable: boolean
+          profile_id: string
+          show_email_to_connections: boolean
+          show_instagram_to_connections: boolean
+          show_linkedin_to_connections: boolean
+          show_phone_to_connections: boolean
+          show_whatsapp_to_connections: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          networking_enabled?: boolean
+          profile_discoverable?: boolean
+          profile_id: string
+          show_email_to_connections?: boolean
+          show_instagram_to_connections?: boolean
+          show_linkedin_to_connections?: boolean
+          show_phone_to_connections?: boolean
+          show_whatsapp_to_connections?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          networking_enabled?: boolean
+          profile_discoverable?: boolean
+          profile_id?: string
+          show_email_to_connections?: boolean
+          show_instagram_to_connections?: boolean
+          show_linkedin_to_connections?: boolean
+          show_phone_to_connections?: boolean
+          show_whatsapp_to_connections?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_privacy_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          bio: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          instagram: string | null
+          interests: string[]
+          linkedin: string | null
+          location: string | null
+          networking_preferences: string | null
+          organisation: string | null
+          phone: string | null
+          photo_path: string | null
+          profession: string | null
+          skills: string[]
+          updated_at: string
+          website: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          instagram?: string | null
+          interests?: string[]
+          linkedin?: string | null
+          location?: string | null
+          networking_preferences?: string | null
+          organisation?: string | null
+          phone?: string | null
+          photo_path?: string | null
+          profession?: string | null
+          skills?: string[]
+          updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          instagram?: string | null
+          interests?: string[]
+          linkedin?: string | null
+          location?: string | null
+          networking_preferences?: string | null
+          organisation?: string | null
+          phone?: string | null
+          photo_path?: string | null
+          profession?: string | null
+          skills?: string[]
+          updated_at?: string
+          website?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          granted_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          granted_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin" | "admin" | "staff" | "attendee" | "speaker"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +291,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin", "admin", "staff", "attendee", "speaker"],
+    },
   },
 } as const
