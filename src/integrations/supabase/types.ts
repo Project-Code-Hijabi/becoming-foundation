@@ -903,6 +903,27 @@ export type Database = {
     }
     Functions: {
       are_connected: { Args: { _a: string; _b: string }; Returns: boolean }
+      get_shareable_profile: {
+        Args: { _target: string }
+        Returns: {
+          bio: string
+          email: string
+          full_name: string
+          id: string
+          instagram: string
+          interests: string[]
+          is_connected: boolean
+          linkedin: string
+          location: string
+          networking_preferences: string
+          organisation: string
+          phone: string
+          photo_path: string
+          profession: string
+          skills: string[]
+          whatsapp: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
