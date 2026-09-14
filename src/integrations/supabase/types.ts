@@ -14,6 +14,236 @@ export type Database = {
   }
   public: {
     Tables: {
+      attendee_badges: {
+        Row: {
+          created_at: string
+          id: string
+          issued_at: string
+          qr_token: string
+          registration_id: string
+          status: Database["public"]["Enums"]["badge_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issued_at?: string
+          qr_token?: string
+          registration_id: string
+          status?: Database["public"]["Enums"]["badge_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issued_at?: string
+          qr_token?: string
+          registration_id?: string
+          status?: Database["public"]["Enums"]["badge_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendee_badges_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: true
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      badge_scans: {
+        Row: {
+          id: string
+          scanned_at: string
+          scanned_user_id: string
+          scanner_user_id: string
+        }
+        Insert: {
+          id?: string
+          scanned_at?: string
+          scanned_user_id: string
+          scanner_user_id: string
+        }
+        Update: {
+          id?: string
+          scanned_at?: string
+          scanned_user_id?: string
+          scanner_user_id?: string
+        }
+        Relationships: []
+      }
+      check_ins: {
+        Row: {
+          badge_id: string
+          checked_in_at: string
+          checked_in_by: string | null
+          id: string
+          is_override: boolean
+          notes: string | null
+          programme_item_id: string | null
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          checked_in_at?: string
+          checked_in_by?: string | null
+          id?: string
+          is_override?: boolean
+          notes?: string | null
+          programme_item_id?: string | null
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          checked_in_at?: string
+          checked_in_by?: string | null
+          id?: string
+          is_override?: boolean
+          notes?: string | null
+          programme_item_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "check_ins_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "attendee_badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      connection_requests: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          recipient_id: string
+          requester_id: string
+          responded_at: string | null
+          status: Database["public"]["Enums"]["connection_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          recipient_id: string
+          requester_id: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["connection_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          recipient_id?: string
+          requester_id?: string
+          responded_at?: string | null
+          status?: Database["public"]["Enums"]["connection_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      connections: {
+        Row: {
+          connected_at: string
+          id: string
+          request_id: string | null
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          connected_at?: string
+          id?: string
+          request_id?: string | null
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          connected_at?: string
+          id?: string
+          request_id?: string | null
+          user_a?: string
+          user_b?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "connections_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "connection_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount_kobo: number
+          created_at: string
+          currency: string
+          failure_reason: string | null
+          id: string
+          paid_at: string | null
+          provider: string
+          provider_payload: Json | null
+          provider_transaction_id: string | null
+          registration_id: string
+          status: Database["public"]["Enums"]["payment_status"]
+          tx_ref: string
+          updated_at: string
+          user_id: string
+          verified_at: string | null
+        }
+        Insert: {
+          amount_kobo: number
+          created_at?: string
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          paid_at?: string | null
+          provider?: string
+          provider_payload?: Json | null
+          provider_transaction_id?: string | null
+          registration_id: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          tx_ref: string
+          updated_at?: string
+          user_id: string
+          verified_at?: string | null
+        }
+        Update: {
+          amount_kobo?: number
+          created_at?: string
+          currency?: string
+          failure_reason?: string | null
+          id?: string
+          paid_at?: string | null
+          provider?: string
+          provider_payload?: Json | null
+          provider_transaction_id?: string | null
+          registration_id?: string
+          status?: Database["public"]["Enums"]["payment_status"]
+          tx_ref?: string
+          updated_at?: string
+          user_id?: string
+          verified_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profile_privacy: {
         Row: {
           created_at: string
@@ -124,6 +354,107 @@ export type Database = {
         }
         Relationships: []
       }
+      registrations: {
+        Row: {
+          accessibility_notes: string | null
+          amount_kobo: number
+          attendee_code: string
+          created_at: string
+          currency: string
+          dietary_notes: string | null
+          id: string
+          paid_at: string | null
+          payment_reference: string | null
+          status: Database["public"]["Enums"]["registration_status"]
+          ticket_type_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accessibility_notes?: string | null
+          amount_kobo: number
+          attendee_code: string
+          created_at?: string
+          currency?: string
+          dietary_notes?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_reference?: string | null
+          status?: Database["public"]["Enums"]["registration_status"]
+          ticket_type_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accessibility_notes?: string | null
+          amount_kobo?: number
+          attendee_code?: string
+          created_at?: string
+          currency?: string
+          dietary_notes?: string | null
+          id?: string
+          paid_at?: string | null
+          payment_reference?: string | null
+          status?: Database["public"]["Enums"]["registration_status"]
+          ticket_type_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registrations_ticket_type_id_fkey"
+            columns: ["ticket_type_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ticket_types: {
+        Row: {
+          code: string
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          price_kobo: number
+          quantity_cap: number | null
+          sales_end: string | null
+          sales_start: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          price_kobo: number
+          quantity_cap?: number | null
+          sales_end?: string | null
+          sales_start?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          price_kobo?: number
+          quantity_cap?: number | null
+          sales_end?: string | null
+          sales_start?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -153,6 +484,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      are_connected: { Args: { _a: string; _b: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -165,6 +497,15 @@ export type Database = {
     }
     Enums: {
       app_role: "super_admin" | "admin" | "staff" | "attendee" | "speaker"
+      badge_status: "active" | "revoked"
+      connection_status: "pending" | "accepted" | "declined" | "blocked"
+      payment_status:
+        | "pending"
+        | "successful"
+        | "failed"
+        | "cancelled"
+        | "refunded"
+      registration_status: "pending" | "paid" | "cancelled" | "refunded"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -293,6 +634,16 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin", "admin", "staff", "attendee", "speaker"],
+      badge_status: ["active", "revoked"],
+      connection_status: ["pending", "accepted", "declined", "blocked"],
+      payment_status: [
+        "pending",
+        "successful",
+        "failed",
+        "cancelled",
+        "refunded",
+      ],
+      registration_status: ["pending", "paid", "cancelled", "refunded"],
     },
   },
 } as const
