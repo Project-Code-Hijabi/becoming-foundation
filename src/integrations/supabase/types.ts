@@ -903,6 +903,20 @@ export type Database = {
     }
     Functions: {
       are_connected: { Args: { _a: string; _b: string }; Returns: boolean }
+      generate_qr_token: { Args: never; Returns: string }
+      get_my_payment_summary: {
+        Args: never
+        Returns: {
+          amount_kobo: number
+          attendee_code: string
+          currency: string
+          paid_at: string
+          reference: string
+          registration_id: string
+          status: Database["public"]["Enums"]["payment_status"]
+          ticket_name: string
+        }[]
+      }
       get_shareable_profile: {
         Args: { _target: string }
         Returns: {
@@ -933,6 +947,21 @@ export type Database = {
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
+      staff_lookup_badge: {
+        Args: { _qr_token: string }
+        Returns: {
+          accessibility_notes: string
+          already_checked_in: boolean
+          badge_id: string
+          badge_status: Database["public"]["Enums"]["badge_status"]
+          dietary_notes: string
+          full_name: string
+          photo_path: string
+          registration_status: Database["public"]["Enums"]["registration_status"]
+          ticket_name: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "staff" | "attendee" | "speaker"
