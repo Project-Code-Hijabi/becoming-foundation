@@ -938,7 +938,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      are_connected: { Args: { _a: string; _b: string }; Returns: boolean }
       generate_qr_token: { Args: never; Returns: string }
       get_my_payment_summary: {
         Args: never
@@ -974,15 +973,6 @@ export type Database = {
           whatsapp: string
         }[]
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_admin: { Args: { _user_id: string }; Returns: boolean }
-      is_staff: { Args: { _user_id: string }; Returns: boolean }
       staff_lookup_badge: {
         Args: { _qr_token: string }
         Returns: {
