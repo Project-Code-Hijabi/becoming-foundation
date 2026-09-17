@@ -382,6 +382,42 @@ export type Database = {
         }
         Relationships: []
       }
+      event_asset_publications: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          display_order: number
+          id: string
+          is_published: boolean
+          object_path: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          object_path: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          object_path?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hackathon_team_members: {
         Row: {
           created_at: string
