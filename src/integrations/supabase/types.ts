@@ -382,6 +382,42 @@ export type Database = {
         }
         Relationships: []
       }
+      event_asset_publications: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          display_order: number
+          id: string
+          is_published: boolean
+          object_path: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          object_path: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_published?: boolean
+          object_path?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hackathon_team_members: {
         Row: {
           created_at: string
@@ -902,7 +938,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      are_connected: { Args: { _a: string; _b: string }; Returns: boolean }
       generate_qr_token: { Args: never; Returns: string }
       get_my_payment_summary: {
         Args: never
@@ -938,15 +973,6 @@ export type Database = {
           whatsapp: string
         }[]
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_admin: { Args: { _user_id: string }; Returns: boolean }
-      is_staff: { Args: { _user_id: string }; Returns: boolean }
       staff_lookup_badge: {
         Args: { _qr_token: string }
         Returns: {
