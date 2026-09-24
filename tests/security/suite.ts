@@ -168,6 +168,9 @@ async function seed() {
   }).eq('profile_id', actors['attendeeB'].id);
   await admin.from('profile_privacy').update({ networking_enabled: false })
     .eq('profile_id', actors['outsider'].id);
+  // C is the legitimate recipient in the networking flow, so C opts in
+  await admin.from('profile_privacy').update({ networking_enabled: true })
+    .eq('profile_id', actors['attendeeC'].id);
 
   // private data owned by A
   const { data: letter } = await admin.from('dear_future_me')
