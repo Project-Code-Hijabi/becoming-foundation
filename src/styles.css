@@ -149,3 +149,4 @@
 .caret::after { content: "▍"; margin-left: 2px; animation: caret 1s step-end infinite; color: var(--champagne); }
 .spin-slow { animation: spin-slow 60s linear infinite; }
 .rise { opacity: 0; animation: rise 1.4s cubic-bezier(.2,.7,.2,1) forwards; }
+@keyframes fadeout { to { opacity: 0; } }

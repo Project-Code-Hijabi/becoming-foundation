@@ -63,11 +63,9 @@ export function CurtainEntry() {
       role="presentation"
       aria-hidden
       className="fixed inset-0 z-[100] overflow-hidden bg-ink grain transition-opacity duration-700"
-      style={{ opacity: skip && phase === "black" ? 1 : undefined }}
+      style={skip ? { animation: "fadeout .6s ease forwards" } : undefined}
     >
-      {skip ? (
-        <div className="absolute inset-0 bg-ink" style={{ animation: "rise .7s reverse forwards" }} />
-      ) : (
+      {skip ? null : (
         <>
           <canvas
             ref={canvas}
