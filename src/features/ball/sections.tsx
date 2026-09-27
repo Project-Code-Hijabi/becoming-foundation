@@ -150,7 +150,7 @@ export function BecomingConstellation() {
       <div ref={ref} className="relative mx-auto aspect-square w-full max-w-3xl md:aspect-[4/3]">
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full" aria-hidden style={{ transform: `rotate(${shift * 6}deg)`, transition: "transform .2s linear" }}>
           {pts.map((p, i) => {
-            const q = pts[(i + 3) % pts.length];
+            const q = pts[(i + 3) % pts.length]!;
             return (
               <g key={i} stroke="var(--champagne)" strokeWidth="0.15" fill="none" opacity={seen ? 0.5 : 0} style={{ transition: `opacity 1.5s ${i * 150}ms` }}>
                 <path d={`M50 50 L${p.x} ${p.y}`} strokeDasharray="0.8 0.8" />
@@ -164,7 +164,7 @@ export function BecomingConstellation() {
           <span
             key={w}
             className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-sans text-[0.6rem] uppercase tracking-[0.18em] text-lavender transition-all duration-1000 md:text-xs md:tracking-[0.3em]"
-            style={{ left: `clamp(3rem, ${pts[i].x}%, calc(100% - 3rem))`, top: `${pts[i].y}%`, opacity: seen ? 1 : 0, transform: `translate(-50%, calc(-50% + ${shift * (i % 2 ? 14 : -14)}px))`, transitionDelay: `${i * 120}ms` }}
+            style={{ left: `clamp(3rem, ${pts[i]!.x}%, calc(100% - 3rem))`, top: `${pts[i]!.y}%`, opacity: seen ? 1 : 0, transform: `translate(-50%, calc(-50% + ${shift * (i % 2 ? 14 : -14)}px))`, transitionDelay: `${i * 120}ms` }}
           >
             {w}
           </span>
