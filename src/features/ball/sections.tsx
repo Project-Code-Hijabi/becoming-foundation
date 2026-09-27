@@ -285,7 +285,7 @@ function PendingCard({ text }: { text: string }) {
 }
 
 export function Speakers() {
-  const q = KEYNOTES[0].quote;
+  const q = KEYNOTES[0]?.quote;
   return (
     <EditorialSection id="speakers" label="Speakers" className="velvet-bg">
       <div className="mx-auto max-w-6xl">
@@ -295,7 +295,7 @@ export function Speakers() {
         {q && (
           <Reveal as="blockquote" className="mx-auto my-28 max-w-3xl text-center font-serif text-3xl italic leading-snug text-blush md:text-5xl">
             “{q}”
-            <footer className="mt-6 font-sans text-[0.65rem] not-italic uppercase tracking-[0.4em] text-champagne">— {KEYNOTES[0].aka}</footer>
+            <footer className="mt-6 font-sans text-[0.65rem] not-italic uppercase tracking-[0.4em] text-champagne">— {KEYNOTES[0]?.aka}</footer>
           </Reveal>
         )}
       </div>

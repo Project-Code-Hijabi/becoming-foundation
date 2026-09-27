@@ -164,7 +164,7 @@ export function CursorTrail() {
   return <div ref={dot} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[60] h-2.5 w-2.5 border border-champagne/80 mix-blend-screen" />;
 }
 
-export function Veil({ children, className }: { children: ReactNode; className?: string }) {
+export function Veil({ children, className }: { children?: ReactNode; className?: string }) {
   return (
     <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-t from-plum/90 via-plum/40 to-transparent transition-all duration-700 group-hover:translate-y-[-8%] group-hover:opacity-40 group-data-[open=true]:opacity-40", className)}>
       {children}
