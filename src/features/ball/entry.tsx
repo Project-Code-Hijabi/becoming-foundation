@@ -16,6 +16,7 @@ export function CurtainEntry() {
     const timers: number[] = [];
     if (returning || reduced) {
       setSkip(true);
+      document.documentElement.dataset.quick = "1";
       timers.push(window.setTimeout(() => setPhase("done"), reduced ? 400 : 700));
     } else {
       timers.push(window.setTimeout(() => setPhase("static"), 500));

@@ -78,7 +78,8 @@
   --ring: var(--champagne);
 
   --gradient-velvet: radial-gradient(ellipse at 50% 0%, oklch(0.32 0.11 335 / 70%), transparent 60%),
-    radial-gradient(ellipse at 50% 100%, oklch(0.22 0.07 310 / 70%), transparent 60%);
+    radial-gradient(ellipse at 15% 85%, oklch(0.55 0.1 355 / 18%), transparent 50%),
+    radial-gradient(ellipse at 50% 100%, oklch(0.26 0.09 305 / 70%), transparent 60%);
   --shadow-glow: 0 0 40px -10px oklch(0.83 0.07 80 / 45%);
 }
 
@@ -149,4 +150,6 @@
 .caret::after { content: "▍"; margin-left: 2px; animation: caret 1s step-end infinite; color: var(--champagne); }
 .spin-slow { animation: spin-slow 60s linear infinite; }
 .rise { opacity: 0; animation: rise 1.4s cubic-bezier(.2,.7,.2,1) forwards; }
+html[data-quick] .rise { animation-delay: .3s !important; }
+@media (prefers-reduced-motion: reduce) { .rise { opacity: 1; animation: none !important; } }
 @keyframes fadeout { to { opacity: 0; } }
