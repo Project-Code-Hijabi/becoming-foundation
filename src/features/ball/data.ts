@@ -6,13 +6,15 @@
 export const EVENT = {
   name: "Project Code-Hijabi",
   edition: "Annual Ball 2026",
+  colourEdition: "Pink & Purple Edition",
   theme: "Becoming",
   subtitle: "Muslim Women Navigating Tech, Identity & Impact",
   dateISO: "2026-11-14T09:00:00+01:00",
   dateLabel: "14 November 2026",
+  dayLabel: "Saturday, 14 November 2026",
   venue: "Raybam",
   city: "Lagos",
-  address: "2 Peace Estate Road, Alimosho, Lagos",
+  address: "20 Peace Estate Road, Alimosho, Lagos",
   mapsUrl: "https://maps.app.goo.gl/d8nK3jUztQhCChBy7?g_st=ic",
   registerPath: "/ball/register",
 };
@@ -31,7 +33,7 @@ export const PROGRAMME: Chapter[] = [
   { no: "10", title: "Leave a Trace", line: "Something to carry home.", time: null },
 ];
 
-export type Person = { name: string; aka?: string; role?: string | null; topic?: string; bio: string | null; bioMore?: string | null; quote?: string };
+export type Person = { name: string; aka?: string; role?: string | null; topic?: string; title?: string | null; bio: string | null; bioMore?: string | null; quote?: string };
 
 export const KEYNOTES: Person[] = [
   {
@@ -47,6 +49,7 @@ export const KEYNOTES: Person[] = [
   {
     name: "Dr. Falilat Jimoh",
     role: "Keynote Speaker 02",
+    title: "Head of Innovation and Digital Inclusion | Southwest Zonal Office, NITDA Nigeria",
     topic: "Becoming: Finding Your Place, Building Your Career & Creating Opportunities in Tech",
     bio: null,
   },
@@ -63,21 +66,22 @@ export const PANEL = {
   people: [
     {
       name: "Ubaydah Abdulwasiu",
-      role: "Engineer",
+      role: "Panelist",
+      title: "Software Engineer, Codematic Technology Services",
       bio: "Petroleum Engineering background, with experience in technical leadership and technology communities, and a public speaker on emerging tech trends and careers.",
     },
-    { name: "Taofeeqah Balogun", role: "Cybersecurity Manager, CyberSOC Africa", bio: null },
+    { name: "Taofeeqah Balogun", role: "Panelist", title: "Cybersecurity Manager, CyberSOC Africa", bio: null },
   ] as Person[],
-  pending: "2 more voices joining the conversation soon",
+  pending: "Joining soon",
 };
 
 export const FIRESIDE = {
   title: "Becoming, Unscripted",
   line: "An intimate conversation beyond polished career stories — pivots, doubts, lessons, unexpected turns and quiet moments.",
   people: [
-    { name: "Aisha Mudathir", role: "Product Manager · Founder, Muslimah in Tech", bio: "Product Manager, community builder and founder of Muslimah in Tech." },
+    { name: "Aisha Mudathir", role: "Fireside Guest", bio: null },
   ] as Person[],
-  pending: "One more voice joining the conversation soon",
+  pending: "Joining soon",
 };
 
 export type Team = { name: string | null; problem: string | null; solution: string | null; members: string[] };

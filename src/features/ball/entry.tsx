@@ -37,7 +37,7 @@ export function CurtainEntry() {
       for (let i = 0; i < img.data.length; i += 4) {
         const v = Math.random() * 255;
         img.data[i] = v * 0.95; img.data[i + 1] = v * 0.85; img.data[i + 2] = v;
-        img.data[i + 3] = 90;
+        img.data[i + 3] = 55;
       }
       ctx.putImageData(img, 0, 0);
       // fleeting circuit fragments as the signal locks
@@ -93,7 +93,7 @@ export function CurtainEntry() {
           ))}
           <div
             className="absolute inset-0 transition-opacity duration-[2000ms]"
-            style={{ opacity: open ? 1 : 0, background: "radial-gradient(ellipse at 50% 20%, oklch(0.83 0.07 80 / 25%), transparent 60%)" }}
+            style={{ opacity: open ? 1 : 0, background: "radial-gradient(ellipse at 50% 15%, oklch(0.83 0.07 80 / 22%), transparent 45%), radial-gradient(ellipse at 30% 70%, oklch(0.66 0.1 355 / 22%), transparent 55%), radial-gradient(ellipse at 75% 60%, oklch(0.5 0.12 310 / 25%), transparent 55%)" }}
           />
         </>
       )}
