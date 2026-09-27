@@ -143,7 +143,7 @@ export function BecomingConstellation() {
   }, [ref]);
   const pts = words.map((_, i) => {
     const a = (i / words.length) * Math.PI * 2 - Math.PI / 2;
-    return { x: 50 + Math.cos(a) * 38, y: 50 + Math.sin(a) * 36 };
+    return { x: 50 + Math.cos(a) * 32, y: 50 + Math.sin(a) * 38 };
   });
   return (
     <EditorialSection id="becoming" label="Becoming" className="overflow-hidden velvet-bg">
@@ -163,7 +163,7 @@ export function BecomingConstellation() {
         {words.map((w, i) => (
           <span
             key={w}
-            className="absolute -translate-x-1/2 -translate-y-1/2 font-sans text-[0.6rem] uppercase tracking-[0.3em] text-lavender transition-all duration-1000 md:text-xs"
+            className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-sans text-[0.6rem] uppercase tracking-[0.18em] text-lavender transition-all duration-1000 md:text-xs md:tracking-[0.3em]"
             style={{ left: `${pts[i].x}%`, top: `${pts[i].y}%`, opacity: seen ? 1 : 0, transform: `translate(-50%, calc(-50% + ${shift * (i % 2 ? 14 : -14)}px))`, transitionDelay: `${i * 120}ms` }}
           >
             {w}
