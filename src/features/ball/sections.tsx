@@ -16,6 +16,12 @@ export function Navigation() {
     window.addEventListener("scroll", f, { passive: true });
     return () => window.removeEventListener("scroll", f);
   }, []);
+  useEffect(() => {
+    if (!open) return;
+    const k = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, [open]);
   return (
     <header className="fixed inset-x-0 top-0 z-50 flex justify-center px-4 pt-4">
       <nav
@@ -69,6 +75,7 @@ export function Hero() {
   const lines: [string, string, number][] = [
     ["font-sans text-[0.7rem] uppercase tracking-[0.5em] text-champagne/80", EVENT.name, 0],
     ["font-sans text-xs uppercase tracking-[0.4em] text-ivory/70", EVENT.edition, 250],
+    ["mt-3 font-serif text-sm italic tracking-[0.2em] text-blush", EVENT.colourEdition, 450],
   ];
   return (
     <section id="pch" aria-label="Welcome" className="relative flex min-h-[100svh] flex-col items-center justify-center overflow-hidden px-6 text-center velvet-bg grain">
@@ -83,10 +90,10 @@ export function Hero() {
           Becoming
         </h1>
         <p className="rise mt-6 max-w-md font-serif text-lg italic text-blush md:text-2xl" style={{ animationDelay: "5.3s" }}>{EVENT.subtitle}</p>
-        <div className="rise mt-10 flex items-center gap-4 font-sans text-[0.7rem] uppercase tracking-[0.35em] text-champagne" style={{ animationDelay: "5.7s" }}>
-          <span>{EVENT.dateLabel}</span>
-          <span className="h-1 w-1 rotate-45 bg-champagne" aria-hidden />
-          <span>{EVENT.venue}, {EVENT.city}</span>
+        <div className="rise mt-10 flex max-w-full flex-col items-center gap-3 font-sans text-[0.7rem] uppercase tracking-[0.3em] text-champagne md:flex-row md:gap-4" style={{ animationDelay: "5.7s" }}>
+          <span>{EVENT.dayLabel}</span>
+          <span className="hidden h-1 w-1 rotate-45 bg-rose md:block" aria-hidden />
+          <a href={EVENT.mapsUrl} target="_blank" rel="noreferrer" className="leading-relaxed underline-offset-4 hover:text-blush hover:underline">{EVENT.venue}, {EVENT.address}</a>
         </div>
         <div className="rise mt-12 flex flex-col gap-4 sm:flex-row" style={{ animationDelay: "6.1s" }}>
           <EnterCta />
@@ -136,7 +143,7 @@ export function BecomingConstellation() {
   }, [ref]);
   const pts = words.map((_, i) => {
     const a = (i / words.length) * Math.PI * 2 - Math.PI / 2;
-    return { x: 50 + Math.cos(a) * 38, y: 50 + Math.sin(a) * 36 };
+    return { x: 50 + Math.cos(a) * 32, y: 50 + Math.sin(a) * 38 };
   });
   return (
     <EditorialSection id="becoming" label="Becoming" className="overflow-hidden velvet-bg">
@@ -156,8 +163,8 @@ export function BecomingConstellation() {
         {words.map((w, i) => (
           <span
             key={w}
-            className="absolute -translate-x-1/2 -translate-y-1/2 font-sans text-[0.6rem] uppercase tracking-[0.3em] text-lavender transition-all duration-1000 md:text-xs"
-            style={{ left: `${pts[i].x}%`, top: `${pts[i].y}%`, opacity: seen ? 1 : 0, transform: `translate(-50%, calc(-50% + ${shift * (i % 2 ? 14 : -14)}px))`, transitionDelay: `${i * 120}ms` }}
+            className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-sans text-[0.6rem] uppercase tracking-[0.18em] text-lavender transition-all duration-1000 md:text-xs md:tracking-[0.3em]"
+            style={{ left: `clamp(3rem, ${pts[i].x}%, calc(100% - 3rem))`, top: `${pts[i].y}%`, opacity: seen ? 1 : 0, transform: `translate(-50%, calc(-50% + ${shift * (i % 2 ? 14 : -14)}px))`, transitionDelay: `${i * 120}ms` }}
           >
             {w}
           </span>
@@ -213,7 +220,7 @@ function ProgrammeChapter({ c }: { c: Chapter }) {
       <div className={cn("grid transition-all duration-500", open ? "grid-rows-[1fr] pb-6" : "grid-rows-[0fr]")}>
         <div className="overflow-hidden pl-12">
           <p className="font-serif text-lg italic text-velvet">{c.line}</p>
-          <p className="mt-2 font-sans text-[0.65rem] uppercase tracking-[0.3em] text-velvet/60">{c.time ?? "Time to be announced"}</p>
+          <p className="mt-2 font-sans text-[0.65rem] uppercase tracking-[0.3em] text-velvet/60">{c.time ?? "To be announced"}</p>
         </div>
       </div>
     </li>
@@ -252,9 +259,10 @@ function SpeakerCard({ p, large }: { p: Person; large?: boolean }) {
       <div className="relative flex h-full flex-col justify-end p-6 md:p-8">
         {p.role && <Eyebrow>{p.role}</Eyebrow>}
         <h3 className="mt-3 font-serif text-3xl text-ivory transition-all duration-500 group-hover:tracking-wide md:text-4xl">{p.name}</h3>
-        {p.aka && <p className="font-serif italic text-blush">known as {p.aka}</p>}
+        {p.aka && <p className="font-serif italic text-blush">widely known as {p.aka}</p>}
+        {p.title && <p className="mt-2 max-w-md font-sans text-xs uppercase leading-relaxed tracking-[0.18em] text-lavender">{p.title}</p>}
         {p.topic && <p className="mt-4 max-w-md font-serif text-lg italic text-champagne/90 transition-all duration-500 group-hover:text-xl">“{p.topic}”</p>}
-        <p className="mt-4 max-w-md text-sm leading-relaxed text-ivory/75">{p.bio ?? "Biography coming soon."}</p>
+        <p className="mt-4 max-w-md text-sm leading-relaxed text-ivory/75">{p.bio ?? (p.topic ? "Biography coming soon." : "Details coming soon.")}</p>
         {p.bioMore && (
           <>
             {more && <p className="mt-2 max-w-md text-sm leading-relaxed text-ivory/75">{p.bioMore}</p>}
@@ -277,7 +285,7 @@ function PendingCard({ text }: { text: string }) {
 }
 
 export function Speakers() {
-  const q = KEYNOTES[0].quote;
+  const q = KEYNOTES[0]?.quote;
   return (
     <EditorialSection id="speakers" label="Speakers" className="velvet-bg">
       <div className="mx-auto max-w-6xl">
@@ -287,7 +295,7 @@ export function Speakers() {
         {q && (
           <Reveal as="blockquote" className="mx-auto my-28 max-w-3xl text-center font-serif text-3xl italic leading-snug text-blush md:text-5xl">
             “{q}”
-            <footer className="mt-6 font-sans text-[0.65rem] not-italic uppercase tracking-[0.4em] text-champagne">— {KEYNOTES[0].aka}</footer>
+            <footer className="mt-6 font-sans text-[0.65rem] not-italic uppercase tracking-[0.4em] text-champagne">— {KEYNOTES[0]?.aka}</footer>
           </Reveal>
         )}
       </div>
@@ -332,7 +340,7 @@ function Conversation({ eyebrow, title, line, people, pending, pendingCount }: {
 export function Conversations() {
   return (
     <EditorialSection label="Conversations" className="space-y-40 bg-ink">
-      <Conversation eyebrow="The Panel" title={PANEL.title} line={PANEL.line} people={PANEL.people} pending={PANEL.pending} pendingCount={1} />
+      <Conversation eyebrow="The Panel" title={PANEL.title} line={PANEL.line} people={PANEL.people} pending={PANEL.pending} pendingCount={2} />
       <Conversation eyebrow="The Fireside Chat" title={FIRESIDE.title} line={FIRESIDE.line} people={FIRESIDE.people} pending={FIRESIDE.pending} pendingCount={1} />
     </EditorialSection>
   );
