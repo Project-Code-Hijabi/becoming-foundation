@@ -164,7 +164,7 @@ export function BecomingConstellation() {
           <span
             key={w}
             className="absolute -translate-x-1/2 -translate-y-1/2 whitespace-nowrap font-sans text-[0.6rem] uppercase tracking-[0.18em] text-lavender transition-all duration-1000 md:text-xs md:tracking-[0.3em]"
-            style={{ left: `${pts[i].x}%`, top: `${pts[i].y}%`, opacity: seen ? 1 : 0, transform: `translate(-50%, calc(-50% + ${shift * (i % 2 ? 14 : -14)}px))`, transitionDelay: `${i * 120}ms` }}
+            style={{ left: `clamp(3rem, ${pts[i].x}%, calc(100% - 3rem))`, top: `${pts[i].y}%`, opacity: seen ? 1 : 0, transform: `translate(-50%, calc(-50% + ${shift * (i % 2 ? 14 : -14)}px))`, transitionDelay: `${i * 120}ms` }}
           >
             {w}
           </span>
