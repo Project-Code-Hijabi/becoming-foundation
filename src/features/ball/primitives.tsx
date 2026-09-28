@@ -45,7 +45,7 @@ export function Reveal({ as: Tag = "div", className, children, ink, delay = 0 }:
 }
 
 export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
-  return <p className={cn("font-sans text-[0.7rem] uppercase tracking-[0.35em] text-champagne/80", className)}>{children}</p>;
+  return <p className={cn("font-sans text-[0.7rem] uppercase tracking-[0.35em] text-blush/85", className)}>{children}</p>;
 }
 
 export function EditorialSection({ id, className, children, label }: { id?: string; className?: string; children: ReactNode; label?: string }) {
@@ -64,7 +64,7 @@ export function EnterCta({ children = "Enter the Ball", variant = "solid", class
       className={cn(
         "group relative inline-flex min-h-12 items-center justify-center gap-3 px-8 font-sans text-xs uppercase tracking-[0.3em] transition-all duration-500",
         variant === "solid"
-          ? "bg-rose text-ivory hover:bg-rosegold glow"
+          ? "bg-rose text-ivory hover:bg-velvet glow"
           : "border border-lavender/45 text-ivory hover:border-blush hover:bg-rose/15 hover:text-blush",
         className,
       )}
@@ -139,7 +139,7 @@ export function LightRays({ className }: { className?: string }) {
   );
 }
 
-/** Desktop-only tiny golden cursor trail. */
+/** Desktop-only tiny pink cursor trail. */
 export function CursorTrail() {
   const dot = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
