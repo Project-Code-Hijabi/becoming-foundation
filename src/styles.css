@@ -29,7 +29,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Ball palette */
+  /* Ball palette — pink light falling into purple */
   --color-ink: var(--ink);
   --color-plum: var(--plum);
   --color-velvet: var(--velvet);
@@ -47,19 +47,19 @@
 
 :root {
   --radius: 0.25rem;
-  --ink: oklch(0.13 0.02 330);
-  --plum: oklch(0.2 0.06 330);
-  --velvet: oklch(0.3 0.1 335);
-  --rose: oklch(0.66 0.08 355);
-  --blush: oklch(0.82 0.05 355);
-  --lavender: oklch(0.78 0.05 310);
-  --ivory: oklch(0.96 0.015 80);
-  --champagne: oklch(0.83 0.07 80);
-  --rosegold: oklch(0.72 0.07 45);
+  --ink: oklch(0.14 0.045 315);
+  --plum: oklch(0.25 0.11 320);
+  --velvet: oklch(0.34 0.15 318);
+  --rose: oklch(0.64 0.2 345);
+  --blush: oklch(0.83 0.09 350);
+  --lavender: oklch(0.78 0.1 310);
+  --ivory: oklch(0.98 0.012 340);
+  --champagne: oklch(0.77 0.14 325);
+  --rosegold: oklch(0.55 0.2 305);
 
   --background: var(--ink);
   --foreground: var(--ivory);
-  --card: oklch(0.18 0.04 330);
+  --card: oklch(0.22 0.085 318);
   --card-foreground: var(--ivory);
   --popover: var(--plum);
   --popover-foreground: var(--ivory);
@@ -67,20 +67,21 @@
   --primary-foreground: var(--ink);
   --secondary: var(--velvet);
   --secondary-foreground: var(--ivory);
-  --muted: oklch(0.22 0.04 330);
-  --muted-foreground: oklch(0.78 0.03 340);
+  --muted: oklch(0.27 0.08 320);
+  --muted-foreground: oklch(0.82 0.06 325);
   --accent: var(--rose);
   --accent-foreground: var(--ink);
   --destructive: oklch(0.6 0.2 25);
   --destructive-foreground: var(--ivory);
-  --border: oklch(0.83 0.07 80 / 18%);
-  --input: oklch(0.83 0.07 80 / 25%);
+  --border: oklch(0.78 0.1 310 / 22%);
+  --input: oklch(0.83 0.09 350 / 28%);
   --ring: var(--champagne);
 
-  --gradient-velvet: radial-gradient(ellipse at 50% 0%, oklch(0.32 0.11 335 / 70%), transparent 60%),
-    radial-gradient(ellipse at 15% 85%, oklch(0.55 0.1 355 / 18%), transparent 50%),
-    radial-gradient(ellipse at 50% 100%, oklch(0.26 0.09 305 / 70%), transparent 60%);
-  --shadow-glow: 0 0 40px -10px oklch(0.83 0.07 80 / 45%);
+  --gradient-velvet: radial-gradient(ellipse at 50% 18%, oklch(0.53 0.18 340 / 32%), transparent 44%),
+    radial-gradient(ellipse at 12% 82%, oklch(0.48 0.18 305 / 28%), transparent 48%),
+    radial-gradient(ellipse at 88% 72%, oklch(0.68 0.16 350 / 18%), transparent 46%),
+    linear-gradient(145deg, oklch(0.15 0.06 315), oklch(0.27 0.12 320) 52%, oklch(0.17 0.07 305));
+  --shadow-glow: 0 0 42px -10px oklch(0.68 0.19 345 / 52%);
 }
 
 @layer base {
@@ -93,7 +94,7 @@
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
   }
-  :focus-visible { outline: 2px solid var(--champagne); outline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--blush); outline-offset: 3px; }
   ::selection { background: var(--rose); color: var(--ink); }
 }
 
@@ -117,13 +118,13 @@
 
 /* Islamic 8-point star geometry, very faint */
 @utility geometry {
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%23e6cf9f' stroke-opacity='0.07' stroke-width='0.8'><rect x='30' y='30' width='60' height='60'/><rect x='30' y='30' width='60' height='60' transform='rotate(45 60 60)'/><circle cx='60' cy='60' r='18'/><path d='M0 60h30M90 60h30M60 0v30M60 90v30'/></g></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g fill='none' stroke='%23d6b5ee' stroke-opacity='0.09' stroke-width='0.8'><rect x='30' y='30' width='60' height='60'/><rect x='30' y='30' width='60' height='60' transform='rotate(45 60 60)'/><circle cx='60' cy='60' r='18'/><path d='M0 60h30M90 60h30M60 0v30M60 90v30'/></g></svg>");
 }
 
 @utility circuit-grid {
   background-image:
-    linear-gradient(oklch(0.78 0.05 310 / 6%) 1px, transparent 1px),
-    linear-gradient(90deg, oklch(0.78 0.05 310 / 6%) 1px, transparent 1px);
+    linear-gradient(oklch(0.77 0.14 325 / 9%) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.78 0.1 310 / 9%) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 

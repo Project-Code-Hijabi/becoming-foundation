@@ -10,7 +10,7 @@ export function useInView<T extends Element>(threshold = 0.2) {
     if (!el) return;
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e.isIntersecting) {
+        if (e?.isIntersecting) {
           setSeen(true);
           io.disconnect();
         }
@@ -64,8 +64,8 @@ export function EnterCta({ children = "Enter the Ball", variant = "solid", class
       className={cn(
         "group relative inline-flex min-h-12 items-center justify-center gap-3 px-8 font-sans text-xs uppercase tracking-[0.3em] transition-all duration-500",
         variant === "solid"
-          ? "bg-champagne text-ink hover:bg-ivory glow"
-          : "border border-champagne/40 text-ivory hover:border-champagne hover:text-champagne",
+          ? "bg-rose text-ivory hover:bg-rosegold glow"
+          : "border border-lavender/45 text-ivory hover:border-blush hover:bg-rose/15 hover:text-blush",
         className,
       )}
     >
@@ -81,13 +81,13 @@ export function WaxSeal({ className, label = "PCH" }: { className?: string; labe
       <svg viewBox="0 0 100 100" className="h-full w-full">
         <defs>
           <radialGradient id="wax" cx="40%" cy="35%">
-            <stop offset="0%" stopColor="var(--rose)" />
-            <stop offset="70%" stopColor="var(--velvet)" />
-            <stop offset="100%" stopColor="var(--plum)" />
+            <stop offset="0%" stopColor="var(--blush)" />
+            <stop offset="38%" stopColor="var(--rose)" />
+            <stop offset="100%" stopColor="var(--velvet)" />
           </radialGradient>
         </defs>
         <path d="M50 3 C62 6 70 2 78 11 C88 16 92 26 95 38 C99 50 96 60 92 70 C87 82 78 90 66 95 C54 99 44 97 33 93 C20 88 11 80 6 67 C1 55 3 43 8 32 C13 20 22 11 34 6 C40 4 45 3 50 3Z" fill="url(#wax)" />
-        <g fill="none" stroke="var(--champagne)" strokeOpacity="0.7" strokeWidth="0.8">
+        <g fill="none" stroke="var(--plum)" strokeOpacity="0.85" strokeWidth="0.8">
           <circle cx="50" cy="50" r="33" />
           <rect x="30" y="30" width="40" height="40" />
           <rect x="30" y="30" width="40" height="40" transform="rotate(45 50 50)" />
@@ -113,11 +113,11 @@ export function Particles({ count = 18, className }: { count?: number; className
       {items.map((p) => (
         <span key={p.i} className="particle" style={{ left: `${p.left}%`, animationDuration: `${p.dur}s`, animationDelay: `${p.delay}s` }}>
           {p.kind === 0 ? (
-            <svg width={p.size * 4} height={p.size * 4} viewBox="0 0 10 10"><path d="M6 1a4 4 0 1 0 3 6.5A3.2 3.2 0 1 1 6 1z" fill="var(--champagne)" opacity=".6" /></svg>
+            <svg width={p.size * 4} height={p.size * 4} viewBox="0 0 10 10"><path d="M6 1a4 4 0 1 0 3 6.5A3.2 3.2 0 1 1 6 1z" fill="var(--blush)" opacity=".72" /></svg>
           ) : p.kind === 1 ? (
             <span className="block border border-lavender/50" style={{ width: p.size * 2, height: p.size * 2, transform: "rotate(45deg)" }} />
           ) : (
-            <span className="block rounded-full bg-champagne/70" style={{ width: p.size, height: p.size, boxShadow: "0 0 8px var(--champagne)" }} />
+            <span className={cn("block rounded-full", p.i % 2 ? "bg-lavender/75" : "bg-rose/75")} style={{ width: p.size, height: p.size, boxShadow: "0 0 9px var(--rose)" }} />
           )}
         </span>
       ))}
@@ -132,7 +132,7 @@ export function LightRays({ className }: { className?: string }) {
         className="rays absolute left-1/2 top-0 h-full w-[140%] -translate-x-1/2"
         style={{
           background:
-            "conic-gradient(from 180deg at 50% 0%, transparent 150deg, oklch(0.83 0.07 80 / 10%) 165deg, transparent 172deg, oklch(0.82 0.05 355 / 8%) 182deg, transparent 190deg, oklch(0.83 0.07 80 / 9%) 198deg, transparent 212deg)",
+            "conic-gradient(from 180deg at 50% 0%, transparent 150deg, oklch(0.83 0.09 350 / 14%) 165deg, transparent 172deg, oklch(0.78 0.1 310 / 12%) 182deg, transparent 190deg, oklch(0.64 0.2 345 / 11%) 198deg, transparent 212deg)",
         }}
       />
     </div>
@@ -161,12 +161,12 @@ export function CursorTrail() {
     return () => { window.removeEventListener("pointermove", move); cancelAnimationFrame(raf); };
   }, [on]);
   if (!on) return null;
-  return <div ref={dot} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[60] h-2.5 w-2.5 border border-champagne/80 mix-blend-screen" />;
+  return <div ref={dot} aria-hidden className="pointer-events-none fixed left-0 top-0 z-[60] h-2.5 w-2.5 border border-blush/80 mix-blend-screen" />;
 }
 
 export function Veil({ children, className }: { children?: ReactNode; className?: string }) {
   return (
-    <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-t from-plum/90 via-plum/40 to-transparent transition-all duration-700 group-hover:translate-y-[-8%] group-hover:opacity-40 group-data-[open=true]:opacity-40", className)}>
+    <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-t from-plum/95 via-rose/35 to-lavender/10 transition-all duration-700 group-hover:translate-y-[-8%] group-hover:opacity-45 group-data-[open=true]:opacity-45", className)}>
       {children}
     </div>
   );
