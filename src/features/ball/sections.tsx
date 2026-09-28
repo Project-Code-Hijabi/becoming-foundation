@@ -28,14 +28,14 @@ export function Navigation() {
         aria-label="Ball"
         className={cn(
           "flex w-full max-w-6xl items-center justify-between px-4 py-3 transition-all duration-700 md:px-6",
-          scrolled && "border border-champagne/10 bg-ink/70 backdrop-blur-md",
+          scrolled && "border border-rose/10 bg-ink/70 backdrop-blur-md",
         )}
       >
         <a href="#pch" className="font-serif text-xl tracking-[0.2em] text-ivory">PCH</a>
         <ul className="hidden items-center gap-7 lg:flex">
           {NAV.slice(1).map((n) => (
             <li key={n.id}>
-              <a href={`#${n.id}`} className="font-sans text-[0.68rem] uppercase tracking-[0.28em] text-ivory/70 transition-colors hover:text-champagne">{n.label}</a>
+              <a href={`#${n.id}`} className="font-sans text-[0.68rem] uppercase tracking-[0.28em] text-ivory/70 transition-colors hover:text-rose">{n.label}</a>
             </li>
           ))}
         </ul>
@@ -73,7 +73,7 @@ export function Navigation() {
 /* ---------------- Hero ---------------- */
 export function Hero() {
   const lines: [string, string, number][] = [
-    ["font-sans text-[0.7rem] uppercase tracking-[0.5em] text-champagne/80", EVENT.name, 0],
+    ["font-sans text-[0.7rem] uppercase tracking-[0.5em] text-rose/80", EVENT.name, 0],
     ["font-sans text-xs uppercase tracking-[0.4em] text-ivory/70", EVENT.edition, 250],
     ["mt-3 font-serif text-sm italic tracking-[0.2em] text-blush", EVENT.colourEdition, 450],
   ];
@@ -90,19 +90,19 @@ export function Hero() {
           Becoming
         </h1>
         <p className="rise mt-6 max-w-md font-serif text-lg italic text-blush md:text-2xl" style={{ animationDelay: "5.3s" }}>{EVENT.subtitle}</p>
-        <div className="rise mt-10 flex max-w-full flex-col items-center gap-3 font-sans text-[0.7rem] uppercase tracking-[0.3em] text-champagne md:flex-row md:gap-4" style={{ animationDelay: "5.7s" }}>
+        <div className="rise mt-10 flex max-w-full flex-col items-center gap-3 font-sans text-[0.7rem] uppercase tracking-[0.3em] text-rose md:flex-row md:gap-4" style={{ animationDelay: "5.7s" }}>
           <span>{EVENT.dayLabel}</span>
           <span className="hidden h-1 w-1 rotate-45 bg-rose md:block" aria-hidden />
           <a href={EVENT.mapsUrl} target="_blank" rel="noreferrer" className="leading-relaxed underline-offset-4 hover:text-blush hover:underline">{EVENT.venue}, {EVENT.address}</a>
         </div>
         <div className="rise mt-12 flex flex-col gap-4 sm:flex-row" style={{ animationDelay: "6.1s" }}>
           <EnterCta />
-          <a href="#arrived" className="inline-flex min-h-12 items-center justify-center px-8 font-sans text-xs uppercase tracking-[0.3em] text-ivory/80 underline-offset-8 hover:text-champagne hover:underline">
+          <a href="#arrived" className="inline-flex min-h-12 items-center justify-center px-8 font-sans text-xs uppercase tracking-[0.3em] text-ivory/80 underline-offset-8 hover:text-rose hover:underline">
             Explore the evening
           </a>
         </div>
       </div>
-      <div className="absolute bottom-8 left-1/2 h-12 w-px -translate-x-1/2 bg-gradient-to-b from-champagne/60 to-transparent" aria-hidden />
+      <div className="absolute bottom-8 left-1/2 h-12 w-px -translate-x-1/2 bg-gradient-to-b from-rose/60 to-transparent" aria-hidden />
     </section>
   );
 }
@@ -120,7 +120,7 @@ export function Arrived() {
             <Reveal as="li" key={w} delay={i * 120} className="font-serif text-3xl text-ivory/85 md:text-5xl">{w}</Reveal>
           ))}
         </ul>
-        <Reveal as="p" className="mt-24 font-sans text-sm uppercase tracking-[0.6em] text-champagne">This is becoming.</Reveal>
+        <Reveal as="p" className="mt-24 font-sans text-sm uppercase tracking-[0.6em] text-rose">This is becoming.</Reveal>
       </div>
     </EditorialSection>
   );
@@ -152,10 +152,10 @@ export function BecomingConstellation() {
           {pts.map((p, i) => {
             const q = pts[(i + 3) % pts.length]!;
             return (
-              <g key={i} stroke="var(--champagne)" strokeWidth="0.15" fill="none" opacity={seen ? 0.5 : 0} style={{ transition: `opacity 1.5s ${i * 150}ms` }}>
+              <g key={i} stroke="var(--rose)" strokeWidth="0.15" fill="none" opacity={seen ? 0.5 : 0} style={{ transition: `opacity 1.5s ${i * 150}ms` }}>
                 <path d={`M50 50 L${p.x} ${p.y}`} strokeDasharray="0.8 0.8" />
                 <path d={`M${p.x} ${p.y} Q50 ${50 + (i % 2 ? 10 : -10)} ${q.x} ${q.y}`} stroke="var(--rose)" />
-                <circle cx={p.x} cy={p.y} r="0.6" fill="var(--champagne)" />
+                <circle cx={p.x} cy={p.y} r="0.6" fill="var(--rose)" />
               </g>
             );
           })}
@@ -194,14 +194,14 @@ export function TerminalMoment() {
   }, [seen, items.length]);
   return (
     <section aria-label="Loading the evening" className="flex justify-center bg-ink px-6 py-24">
-      <div ref={ref} className="w-full max-w-sm border-y border-champagne/15 py-8 font-mono text-sm text-ivory/80" aria-live="polite">
+      <div ref={ref} className="w-full max-w-sm border-y border-rose/15 py-8 font-mono text-sm text-ivory/80" aria-live="polite">
         <p className={cn("text-lavender", n <= items.length && "caret")}>loading the evening…</p>
         <ul className="mt-4 space-y-1.5">
           {items.slice(0, n).map((it) => (
-            <li key={it} className="rise" style={{ animationDuration: ".5s" }}><span className="text-champagne">✓</span> {it}</li>
+            <li key={it} className="rise" style={{ animationDuration: ".5s" }}><span className="text-rose">✓</span> {it}</li>
           ))}
         </ul>
-        {n > items.length && <p className="rise mt-6 tracking-[0.5em] text-champagne">READY</p>}
+        {n > items.length && <p className="rise mt-6 tracking-[0.5em] text-rose">READY</p>}
       </div>
     </section>
   );
@@ -211,7 +211,7 @@ export function TerminalMoment() {
 function ProgrammeChapter({ c }: { c: Chapter }) {
   const [open, setOpen] = useState(false);
   return (
-    <li className="border-b border-champagne/15">
+    <li className="border-b border-rose/15">
       <button type="button" aria-expanded={open} onClick={() => setOpen((o) => !o)} className="group flex w-full items-baseline gap-6 py-6 text-left">
         <span className="font-mono text-xs text-rose">{c.no}</span>
         <span className="flex-1 font-serif text-3xl text-ink transition-all duration-500 group-hover:italic group-hover:tracking-wide md:text-4xl">{c.title}</span>
@@ -231,7 +231,7 @@ export function Programme() {
   return (
     <EditorialSection id="programme" label="The Evening" className="bg-ink">
       <div className="relative mx-auto max-w-3xl bg-ivory px-6 py-16 text-ink shadow-2xl md:px-16">
-        <div className="absolute inset-3 border border-rosegold/40 pointer-events-none" aria-hidden />
+        <div className="absolute inset-3 border border-lavender/40 pointer-events-none" aria-hidden />
         <Eyebrow className="text-center text-velvet/70">The Programme</Eyebrow>
         <Reveal ink as="h2" className="mt-4 text-center font-serif text-6xl font-light md:text-7xl">The Evening</Reveal>
         <p className="mx-auto mt-4 max-w-md text-center font-serif text-lg italic text-velvet">A day of conversations, stories, ideas, connection and celebration.</p>
@@ -251,7 +251,7 @@ function SpeakerCard({ p, large }: { p: Person; large?: boolean }) {
     <article
       data-open={open}
       onClick={() => setOpen((o) => !o)}
-      className={cn("group relative overflow-hidden border border-champagne/15 bg-card transition-colors duration-700 hover:border-champagne/60", large ? "min-h-[30rem]" : "min-h-[20rem]")}
+      className={cn("group relative overflow-hidden border border-rose/15 bg-card transition-colors duration-700 hover:border-rose/60", large ? "min-h-[30rem]" : "min-h-[20rem]")}
     >
       <div className="absolute inset-0 geometry spin-slow opacity-40 transition-opacity duration-700 group-hover:opacity-100 motion-reduce:animate-none" style={{ transformOrigin: "50% 50%" }} aria-hidden />
       <span aria-hidden className="absolute right-6 top-4 font-serif text-[8rem] font-light leading-none text-velvet/60">{initials}</span>
@@ -261,12 +261,12 @@ function SpeakerCard({ p, large }: { p: Person; large?: boolean }) {
         <h3 className="mt-3 font-serif text-3xl text-ivory transition-all duration-500 group-hover:tracking-wide md:text-4xl">{p.name}</h3>
         {p.aka && <p className="font-serif italic text-blush">widely known as {p.aka}</p>}
         {p.title && <p className="mt-2 max-w-md font-sans text-xs uppercase leading-relaxed tracking-[0.18em] text-lavender">{p.title}</p>}
-        {p.topic && <p className="mt-4 max-w-md font-serif text-lg italic text-champagne/90 transition-all duration-500 group-hover:text-xl">“{p.topic}”</p>}
+        {p.topic && <p className="mt-4 max-w-md font-serif text-lg italic text-rose/90 transition-all duration-500 group-hover:text-xl">“{p.topic}”</p>}
         <p className="mt-4 max-w-md text-sm leading-relaxed text-ivory/75">{p.bio ?? (p.topic ? "Biography coming soon." : "Details coming soon.")}</p>
         {p.bioMore && (
           <>
             {more && <p className="mt-2 max-w-md text-sm leading-relaxed text-ivory/75">{p.bioMore}</p>}
-            <button type="button" onClick={(e) => { e.stopPropagation(); setMore((m) => !m); }} aria-expanded={more} className="mt-3 self-start font-sans text-[0.65rem] uppercase tracking-[0.3em] text-champagne underline-offset-4 hover:underline">
+            <button type="button" onClick={(e) => { e.stopPropagation(); setMore((m) => !m); }} aria-expanded={more} className="mt-3 self-start font-sans text-[0.65rem] uppercase tracking-[0.3em] text-rose underline-offset-4 hover:underline">
               {more ? "Read less" : "Read more"}
             </button>
           </>
@@ -278,7 +278,7 @@ function SpeakerCard({ p, large }: { p: Person; large?: boolean }) {
 
 function PendingCard({ text }: { text: string }) {
   return (
-    <div className="flex min-h-[20rem] items-center justify-center border border-dashed border-champagne/20 p-8 text-center">
+    <div className="flex min-h-[20rem] items-center justify-center border border-dashed border-rose/20 p-8 text-center">
       <p className="font-serif text-xl italic text-ivory/60">{text}</p>
     </div>
   );
@@ -295,7 +295,7 @@ export function Speakers() {
         {q && (
           <Reveal as="blockquote" className="mx-auto my-28 max-w-3xl text-center font-serif text-3xl italic leading-snug text-blush md:text-5xl">
             “{q}”
-            <footer className="mt-6 font-sans text-[0.65rem] not-italic uppercase tracking-[0.4em] text-champagne">— {KEYNOTES[0]?.aka}</footer>
+            <footer className="mt-6 font-sans text-[0.65rem] not-italic uppercase tracking-[0.4em] text-rose">— {KEYNOTES[0]?.aka}</footer>
           </Reveal>
         )}
       </div>
@@ -307,15 +307,15 @@ export function Speakers() {
 export function Honoree() {
   return (
     <EditorialSection label="The woman we honour" className="overflow-hidden bg-ink text-center">
-      <div aria-hidden className="absolute inset-0" style={{ background: "radial-gradient(ellipse 50% 60% at 50% 0%, oklch(0.83 0.07 80 / 16%), transparent 70%)" }} />
+      <div aria-hidden className="absolute inset-0" style={{ background: "radial-gradient(ellipse 50% 60% at 50% 0%, oklch(0.68 0.18 345 / 24%), transparent 70%)" }} />
       <LightRays className="opacity-70" />
       <div className="relative mx-auto max-w-3xl">
         <WaxSeal className="mx-auto w-24" label="✦" />
-        <Reveal as="p" className="mt-10 font-sans text-[0.7rem] uppercase tracking-[0.5em] text-champagne">The woman we honour</Reveal>
+        <Reveal as="p" className="mt-10 font-sans text-[0.7rem] uppercase tracking-[0.5em] text-rose">The woman we honour</Reveal>
         <Reveal ink as="h2" className="mt-6 font-serif text-5xl font-light text-ivory md:text-7xl">Grand Honoree</Reveal>
-        <div className="mx-auto my-10 h-px w-24 bg-champagne/50" aria-hidden />
+        <div className="mx-auto my-10 h-px w-24 bg-rose/50" aria-hidden />
         <Reveal as="p" className="font-serif text-2xl leading-snug text-ivory md:text-4xl" delay={200}>{HONOREE.name}</Reveal>
-        <Reveal as="p" className="mt-6 font-serif text-lg italic text-champagne/90 md:text-xl" delay={400}>{HONOREE.title}</Reveal>
+        <Reveal as="p" className="mt-6 font-serif text-lg italic text-rose/90 md:text-xl" delay={400}>{HONOREE.title}</Reveal>
         <Reveal as="p" className="mt-14 font-sans text-[0.65rem] uppercase tracking-[0.5em] text-blush/70" delay={600}>Honour · Legacy · Faith · Presence · Impact</Reveal>
       </div>
     </EditorialSection>
@@ -370,7 +370,7 @@ function HackathonCard({ t, i }: { t: Team; i: number }) {
 export function Hackathon() {
   return (
     <EditorialSection id="hackathon" label="Built By Her" className="overflow-hidden bg-ink circuit-grid">
-      <div aria-hidden className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 80% 20%, oklch(0.4 0.14 310 / 25%), transparent 55%)" }} />
+      <div aria-hidden className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 80% 20%, oklch(0.62 0.2 342 / 24%), transparent 55%)" }} />
       <div className="relative mx-auto max-w-6xl">
         <p className="font-mono text-xs text-lavender/70">// project code-hijabi hackathon 2026 — top five</p>
         <Reveal ink as="h2" className="mt-6 font-serif text-6xl font-light text-ivory md:text-8xl">Built by her.</Reveal>
@@ -396,8 +396,8 @@ export function Connection() {
         <ol className="mt-20 grid gap-12 md:grid-cols-3">
           {steps.map(([t, d], i) => (
             <Reveal as="li" key={t} delay={i * 200} className="relative flex flex-col items-center">
-              <div className="flex h-24 w-24 items-center justify-center border border-champagne/40" style={{ transform: "rotate(45deg)" }}>
-                <span className="font-mono text-xs text-champagne" style={{ transform: "rotate(-45deg)" }}>0{i + 1}</span>
+              <div className="flex h-24 w-24 items-center justify-center border border-rose/40" style={{ transform: "rotate(45deg)" }}>
+                <span className="font-mono text-xs text-rose" style={{ transform: "rotate(-45deg)" }}>0{i + 1}</span>
               </div>
               <h3 className="mt-10 font-sans text-sm uppercase tracking-[0.5em] text-ivory">{t}</h3>
               <p className="mt-3 font-serif text-lg italic text-ivory/70">{d}</p>
@@ -416,20 +416,20 @@ export function TheRoom() {
     <EditorialSection label="The Room" className="bg-ink">
       <div className="mx-auto max-w-6xl">
         <Reveal ink as="h2" className="font-serif text-5xl font-light text-ivory md:text-8xl">The room is waiting.</Reveal>
-        <a href={EVENT.mapsUrl} target="_blank" rel="noreferrer" className="mt-6 inline-block font-sans text-xs uppercase tracking-[0.3em] text-champagne underline-offset-4 hover:underline">
+        <a href={EVENT.mapsUrl} target="_blank" rel="noreferrer" className="mt-6 inline-block font-sans text-xs uppercase tracking-[0.3em] text-rose underline-offset-4 hover:underline">
           {EVENT.venue} · {EVENT.address} ↗
         </a>
         <div className="mt-16 grid gap-6 md:grid-cols-5">
-          <figure className="relative min-h-[26rem] overflow-hidden md:col-span-3 grain" style={{ background: "repeating-linear-gradient(90deg, oklch(0.24 0.09 340) 0 2%, oklch(0.32 0.11 345) 3.5%, oklch(0.22 0.08 340) 5%)" }}>
+          <figure className="relative min-h-[26rem] overflow-hidden md:col-span-3 grain" style={{ background: "repeating-linear-gradient(90deg, oklch(0.22 0.12 312) 0 2%, oklch(0.34 0.17 322) 3.5%, oklch(0.2 0.1 305) 5%)" }}>
             <div aria-hidden className="absolute inset-x-[15%] bottom-0 top-[18%] bg-ink/85" style={{ clipPath: "polygon(0 0,100% 0,100% 100%,0 100%)" }} />
             <LightRays className="h-full" />
-            <div aria-hidden className="absolute inset-x-[10%] bottom-[12%] h-2 bg-champagne/30 blur-md" />
+            <div aria-hidden className="absolute inset-x-[10%] bottom-[12%] h-2 bg-rose/30 blur-md" />
             <figcaption className="absolute bottom-6 left-6 right-6">
               <Eyebrow>The Stage</Eyebrow>
               <p className="mt-3 max-w-md font-serif text-lg italic text-ivory/85">Keynotes, the panel, the fireside chat, hackathon pitches, recognition and celebration.</p>
             </figcaption>
           </figure>
-          <figure className="relative flex min-h-[26rem] flex-col justify-end overflow-hidden border border-champagne/15 p-6 md:col-span-2 geometry">
+          <figure className="relative flex min-h-[26rem] flex-col justify-end overflow-hidden border border-rose/15 p-6 md:col-span-2 geometry">
             <Eyebrow>Upstairs</Eyebrow>
             <p className="mt-3 font-serif text-2xl text-ivory">A little quieter. Still part of the story.</p>
             <p className="mt-3 text-sm text-ivory/65">Overlooking the stage — for the PCH team, speakers, special invited guests and VIPs.</p>
@@ -444,8 +444,8 @@ export function TheRoom() {
 /* ---------------- Awards ---------------- */
 function AwardCard({ a, i }: { a: Award; i: number }) {
   return (
-    <Reveal as="li" delay={(i % 4) * 100} className="group flex flex-col items-center border border-champagne/15 px-6 py-10 text-center transition-colors duration-500 hover:border-champagne/50">
-      <svg viewBox="0 0 40 40" className="h-10 w-10 text-champagne transition-transform duration-700 group-hover:rotate-45" aria-hidden>
+    <Reveal as="li" delay={(i % 4) * 100} className="group flex flex-col items-center border border-rose/15 px-6 py-10 text-center transition-colors duration-500 hover:border-rose/50">
+      <svg viewBox="0 0 40 40" className="h-10 w-10 text-rose transition-transform duration-700 group-hover:rotate-45" aria-hidden>
         <g fill="none" stroke="currentColor" strokeWidth="0.8"><rect x="10" y="10" width="20" height="20" /><rect x="10" y="10" width="20" height="20" transform="rotate(45 20 20)" /></g>
       </svg>
       <h3 className="mt-6 font-serif text-2xl text-ivory">{a.title}</h3>
@@ -493,7 +493,7 @@ export function Countdown() {
           <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-y-10 md:grid-cols-4" aria-live="off">
             {(units ?? [["Days", "—"], ["Hours", "—"], ["Minutes", "—"], ["Seconds", "—"]]).map(([l, v]) => (
               <div key={l}>
-                <p className="font-serif text-6xl font-light tabular-nums text-champagne md:text-8xl">{typeof v === "number" ? String(v).padStart(2, "0") : v}</p>
+                <p className="font-serif text-6xl font-light tabular-nums text-rose md:text-8xl">{typeof v === "number" ? String(v).padStart(2, "0") : v}</p>
                 <p className="mt-2 font-sans text-[0.65rem] uppercase tracking-[0.4em] text-ivory/50">{l}</p>
               </div>
             ))}
@@ -515,7 +515,7 @@ export function Tickets() {
         <div className="mt-16 grid gap-6 md:grid-cols-2">
           {TICKETS.map((t) => (
             <div key={t.code} className="group relative bg-ivory px-8 py-12 text-ink">
-              <div className="pointer-events-none absolute inset-3 border border-rosegold/40" aria-hidden />
+              <div className="pointer-events-none absolute inset-3 border border-lavender/40" aria-hidden />
               <p className="font-sans text-[0.7rem] uppercase tracking-[0.4em] text-velvet">{t.name}</p>
               <p className="mt-4 font-serif text-6xl font-light">{naira(t.priceKobo)}</p>
               <WaxSeal className="absolute -right-4 -top-4 w-16 transition-transform duration-700 group-hover:rotate-12 group-hover:scale-110" />
@@ -535,7 +535,7 @@ export function Finale() {
       <Particles count={10} />
       <Reveal ink as="h2" className="font-serif text-[clamp(3rem,11vw,9rem)] font-light leading-none text-ivory">You are becoming.</Reveal>
       <p className="mt-8 font-serif text-xl italic text-blush md:text-2xl">Come as you are. Leave with something to remember.</p>
-      <div className="mt-12 space-y-2 font-sans text-[0.7rem] uppercase tracking-[0.4em] text-champagne/85">
+      <div className="mt-12 space-y-2 font-sans text-[0.7rem] uppercase tracking-[0.4em] text-rose/85">
         <p>{EVENT.name}</p><p>{EVENT.edition}</p><p>{EVENT.dateLabel}</p><p>{EVENT.venue}, {EVENT.city}</p>
       </div>
       <EnterCta className="mt-12" />
@@ -546,7 +546,7 @@ export function Finale() {
 export function Footer() {
   // Social/contact links to be supplied; rendered as labels until then.
   return (
-    <footer className="border-t border-champagne/10 bg-ink px-6 py-10">
+    <footer className="border-t border-rose/10 bg-ink px-6 py-10">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 font-sans text-[0.65rem] uppercase tracking-[0.3em] text-ivory/50 md:flex-row">
         <p>{EVENT.name} · {EVENT.edition}</p>
         <ul className="flex gap-6">

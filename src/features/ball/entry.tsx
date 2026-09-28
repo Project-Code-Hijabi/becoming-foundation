@@ -43,7 +43,7 @@ export function CurtainEntry() {
       ctx.putImageData(img, 0, 0);
       // fleeting circuit fragments as the signal locks
       if (f > 40) {
-        ctx.strokeStyle = "rgba(230,207,159,0.55)";
+        ctx.strokeStyle = "rgba(224,177,237,0.62)";
         ctx.beginPath();
         ctx.moveTo(40, 50); ctx.lineTo(70, 50); ctx.lineTo(80, 38); ctx.lineTo(120, 38);
         ctx.moveTo(80, 50); ctx.lineTo(80, 70); ctx.lineTo(110, 70);
@@ -84,17 +84,17 @@ export function CurtainEntry() {
                 transform: open ? `translateX(${side === "left" ? "-102%" : "102%"})` : "none",
                 opacity: phase === "black" ? 0 : 1,
                 background:
-                  "repeating-linear-gradient(90deg, oklch(0.22 0.08 340) 0 3%, oklch(0.34 0.12 345) 5%, oklch(0.2 0.07 340) 8%), linear-gradient(180deg, transparent 70%, oklch(0.1 0.03 330 / 70%))",
+                  "repeating-linear-gradient(90deg, oklch(0.2 0.1 310) 0 3%, oklch(0.32 0.16 320) 5%, oklch(0.18 0.09 305) 8%), linear-gradient(110deg, oklch(0.65 0.2 345 / 18%), transparent 28%, oklch(0.78 0.1 310 / 10%) 62%, transparent), linear-gradient(180deg, transparent 70%, oklch(0.1 0.04 315 / 78%))",
                 backgroundBlendMode: "multiply",
-                boxShadow: side === "left" ? "inset -30px 0 60px oklch(0.1 0.03 330)" : "inset 30px 0 60px oklch(0.1 0.03 330)",
+                boxShadow: side === "left" ? "inset -30px 0 64px oklch(0.65 0.2 345 / 22%)" : "inset 30px 0 64px oklch(0.65 0.2 345 / 22%)",
               }}
             >
-              <div className="absolute inset-y-0 w-px bg-champagne/40" style={{ [side === "left" ? "right" : "left"]: 0 }} />
+              <div className="absolute inset-y-0 w-px bg-blush/45" style={{ [side === "left" ? "right" : "left"]: 0 }} />
             </div>
           ))}
           <div
             className="absolute inset-0 transition-opacity duration-[2000ms]"
-            style={{ opacity: open ? 1 : 0, background: "radial-gradient(ellipse at 50% 15%, oklch(0.83 0.07 80 / 22%), transparent 45%), radial-gradient(ellipse at 30% 70%, oklch(0.66 0.1 355 / 22%), transparent 55%), radial-gradient(ellipse at 75% 60%, oklch(0.5 0.12 310 / 25%), transparent 55%)" }}
+            style={{ opacity: open ? 1 : 0, background: "radial-gradient(ellipse at 50% 15%, oklch(0.83 0.09 350 / 30%), transparent 45%), radial-gradient(ellipse at 30% 70%, oklch(0.64 0.2 345 / 28%), transparent 55%), radial-gradient(ellipse at 75% 60%, oklch(0.55 0.2 305 / 30%), transparent 55%)" }}
           />
         </>
       )}

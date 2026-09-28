@@ -79,7 +79,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Project Code-Hijabi Annual Ball 2026" },
       { name: "description", content: "Becoming: Muslim Women Navigating Tech, Identity & Impact." },
-      { name: "theme-color", content: "#1a0f17" },
+      { name: "theme-color", content: "#1a0b21" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
