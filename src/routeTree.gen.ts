@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BallIndexRouteImport } from './routes/ball.index'
+import { Route as BallRegisterRouteImport } from './routes/ball.register'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,30 +23,39 @@ const BallIndexRoute = BallIndexRouteImport.update({
   path: '/ball/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BallRegisterRoute = BallRegisterRouteImport.update({
+  id: '/ball/register',
+  path: '/ball/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ball/register': typeof BallRegisterRoute
   '/ball/': typeof BallIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ball/register': typeof BallRegisterRoute
   '/ball': typeof BallIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ball/register': typeof BallRegisterRoute
   '/ball/': typeof BallIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ball/'
+  fullPaths: '/' | '/ball/register' | '/ball/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ball'
-  id: '__root__' | '/' | '/ball/'
+  to: '/' | '/ball/register' | '/ball'
+  id: '__root__' | '/' | '/ball/register' | '/ball/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BallRegisterRoute: typeof BallRegisterRoute
   BallIndexRoute: typeof BallIndexRoute
 }
 
@@ -65,11 +75,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BallIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ball/register': {
+      id: '/ball/register'
+      path: '/ball/register'
+      fullPath: '/ball/register'
+      preLoaderRoute: typeof BallRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BallRegisterRoute: BallRegisterRoute,
   BallIndexRoute: BallIndexRoute,
 }
 export const routeTree = rootRouteImport
