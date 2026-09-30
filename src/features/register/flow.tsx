@@ -51,7 +51,7 @@ const handle = (v: string) => v.trim().replace(/^https?:\/\/(www\.)?instagram\.c
 const fieldCls =
   "w-full min-h-12 rounded-none border-0 border-b border-lavender/35 bg-transparent px-0 py-3 font-serif text-xl text-ivory placeholder:text-lavender/40 transition-colors focus:border-blush focus:outline-none focus-visible:outline-none aria-[invalid=true]:border-rose";
 
-function Field({ id, label, hint, error, optional, children }: { id: string; label: string; hint?: ReactNode; error?: string; optional?: boolean; children: ReactNode }) {
+function Field({ id, label, hint, error, optional, children }: { id: string; label: string; hint?: ReactNode | undefined; error?: string | undefined; optional?: boolean | undefined; children: ReactNode }) {
   return (
     <div className="space-y-1">
       <label htmlFor={id} className="flex items-baseline justify-between gap-3 font-sans text-[0.7rem] uppercase tracking-[0.28em] text-lavender">
@@ -65,7 +65,7 @@ function Field({ id, label, hint, error, optional, children }: { id: string; lab
   );
 }
 
-function Btn({ children, onClick, variant = "solid", type = "button", disabled, className }: { children: ReactNode; onClick?: () => void; variant?: "solid" | "ghost" | "text"; type?: "button" | "submit"; disabled?: boolean; className?: string }) {
+function Btn({ children, onClick, variant = "solid", type = "button", disabled, className }: { children: ReactNode; onClick?: () => void; variant?: "solid" | "ghost" | "text"; type?: "button" | "submit"; disabled?: boolean | undefined; className?: string }) {
   return (
     <button
       type={type}
@@ -84,7 +84,7 @@ function Btn({ children, onClick, variant = "solid", type = "button", disabled, 
   );
 }
 
-function Toggle({ id, checked, onChange, label, desc, disabled }: { id: string; checked: boolean; onChange: (v: boolean) => void; label: string; desc?: string; disabled?: boolean }) {
+function Toggle({ id, checked, onChange, label, desc, disabled }: { id: string; checked: boolean; onChange: (v: boolean) => void; label: string; desc?: string | undefined; disabled?: boolean | undefined }) {
   return (
     <div className={cn("flex items-start justify-between gap-4 py-4", disabled && "opacity-45")}>
       <div>
@@ -306,7 +306,7 @@ type StepProps = {
   next: () => void; back: () => void; fail: (e: Record<string, string>) => boolean; go: (i: number) => void;
 };
 
-function Nav({ onNext, nextLabel = "Continue →", back, busy, disabled }: { onNext: () => void; nextLabel?: string; back?: () => void; busy?: boolean; disabled?: boolean }) {
+function Nav({ onNext, nextLabel = "Continue →", back, busy, disabled }: { onNext: () => void; nextLabel?: string; back?: () => void; busy?: boolean | undefined; disabled?: boolean | undefined }) {
   return (
     <div className="mt-12 flex flex-col-reverse items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
       {back ? <Btn variant="text" onClick={back}>← Back</Btn> : <span />}
