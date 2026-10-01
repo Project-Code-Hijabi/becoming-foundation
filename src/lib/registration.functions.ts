@@ -140,22 +140,89 @@ export const createRegistration = createServerFn({ method: "POST" })
     return { ok: false, reason: "error" };
   });
 
-/** Signed in: payment handoff. Flutterwave is not configured yet, so this never starts or fakes a payment. */
+export type StartPaymentResult =
+  | { status: "redirect"; link: string }
+  | { status: "not_configured" | "already_paid" | "no_registration" | "price_changed" | "unavailable" | "error" };
+
+/** Signed in: creates a pending payment attempt server-side and returns the Flutterwave checkout link. */
 export const startPayment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<{ status: "not_configured" | "already_paid" | "no_registration" }> => {
+  .handler(async ({ context }): Promise<StartPaymentResult> => {
     const { data: reg } = await context.supabase
       .from("registrations")
-      .select("status")
+      .select("id, status, amount_kobo, currency, ticket_type_id")
       .eq("user_id", context.userId)
       .in("status", ["pending", "paid"])
       .maybeSingle();
     if (!reg) return { status: "no_registration" };
     if (reg.status === "paid") return { status: "already_paid" };
-    if (!process.env["FLUTTERWAVE_SECRET_KEY"]) return { status: "not_configured" };
-    // Future: create a pending `payments` row server-side and return the Flutterwave checkout link.
-    // Only the verified webhook/verification route may ever mark it successful.
-    return { status: "not_configured" };
+
+    const fw = await import("@/lib/flutterwave.server");
+    if (!fw.isFlutterwaveConfigured()) return { status: "not_configured" };
+
+    // Re-check the ticket right before charging: price and availability come from the database.
+    const { data: ticket } = await context.supabase
+      .from("ticket_types")
+      .select("name, price_kobo, currency, is_active, sales_start, sales_end")
+      .eq("id", reg.ticket_type_id)
+      .maybeSingle();
+    const now = Date.now();
+    if (!ticket || !ticket.is_active ||
+      (ticket.sales_start && new Date(ticket.sales_start).getTime() > now) ||
+      (ticket.sales_end && new Date(ticket.sales_end).getTime() < now)) return { status: "unavailable" };
+    if (ticket.price_kobo !== reg.amount_kobo || ticket.currency !== reg.currency) return { status: "price_changed" };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: profile } = await supabaseAdmin.from("profiles").select("full_name, phone, email").eq("id", context.userId).maybeSingle();
+    const email = (context.claims as { email?: string }).email ?? profile?.email;
+    if (!email) return { status: "error" };
+
+    // Retire earlier unfinished attempts so only the newest can be paid against.
+    const { data: open } = await supabaseAdmin.from("payments").select("tx_ref").eq("registration_id", reg.id).eq("status", "pending");
+    for (const p of open ?? []) {
+      const r = await fw.verifyAndFinalize(p.tx_ref);
+      if (r === "paid") return { status: "already_paid" };
+      if (r === "pending" || r === "not_found") {
+        await supabaseAdmin.from("payments").update({ status: "cancelled", failure_reason: "superseded" }).eq("tx_ref", p.tx_ref).eq("status", "pending");
+      }
+    }
+
+    const txRef = fw.newTxRef();
+    const { error } = await supabaseAdmin.from("payments").insert({
+      registration_id: reg.id, user_id: context.userId, provider: "flutterwave",
+      tx_ref: txRef, amount_kobo: reg.amount_kobo, currency: reg.currency, status: "pending",
+    });
+    if (error) return { status: "error" };
+
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const origin = new URL(getRequest().url).origin;
+    try {
+      const link = await fw.createCheckout({
+        txRef, amountKobo: reg.amount_kobo, currency: reg.currency, email,
+        name: profile?.full_name ?? null, phone: profile?.phone ?? null,
+        redirectUrl: `${origin}/ball/register`, ticketName: ticket.name,
+      });
+      return { status: "redirect", link };
+    } catch {
+      await supabaseAdmin.from("payments").update({ status: "failed", failure_reason: "checkout_creation_failed" }).eq("tx_ref", txRef);
+      return { status: "error" };
+    }
+  });
+
+export type VerifyResult = { outcome: "paid" | "pending" | "cancelled" | "failed" | "mismatch" | "not_found" | "unavailable" };
+
+/** Signed in: verifies the caller's own payment directly with Flutterwave. Idempotent. */
+export const verifyPayment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ txRef: z.string().regex(/^PCHB26-PAY-[0-9a-f]{32}$/), cancelled: z.boolean().optional() }).parse(d))
+  .handler(async ({ data, context }): Promise<VerifyResult> => {
+    const { data: own } = await context.supabase.from("registrations").select("id").eq("user_id", context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: pay } = await supabaseAdmin.from("payments").select("user_id").eq("tx_ref", data.txRef).maybeSingle();
+    if (!pay || pay.user_id !== context.userId || !own?.length) return { outcome: "not_found" };
+    const { verifyAndFinalize, isFlutterwaveConfigured } = await import("@/lib/flutterwave.server");
+    if (!isFlutterwaveConfigured()) return { outcome: "unavailable" };
+    return { outcome: await verifyAndFinalize(data.txRef, { clientSaysCancelled: data.cancelled }) };
   });
 
 /** Signed in: the caller's own registration summary (no internal IDs, no tokens). */
