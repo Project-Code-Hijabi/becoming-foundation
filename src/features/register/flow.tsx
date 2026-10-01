@@ -188,6 +188,8 @@ export function RegisterFlow() {
   const fetchMine = useServerFn(getMyRegistration);
   const [paid, setPaid] = useState<Awaited<ReturnType<typeof getMyRegistration>>>(null);
 
+  const [returnRef, setReturnRef] = useState<{ txRef: string; cancelled: boolean } | null>(null);
+
   // restore draft + session after hydration
   useEffect(() => {
     try {
@@ -197,6 +199,17 @@ export function RegisterFlow() {
         setD({ ...EMPTY, ...saved.d });
         setStep(Math.min(saved.step, 9));
         setMaxReached(Math.min(saved.max, 9));
+      }
+    } catch { /* ignore */ }
+    // Returning from Flutterwave: the query string is only a hint; the server verifies.
+    try {
+      const q = new URLSearchParams(window.location.search);
+      const ref = q.get("tx_ref");
+      if (ref && /^PCHB26-PAY-[0-9a-f]{32}$/.test(ref)) {
+        setReturnRef({ txRef: ref, cancelled: q.get("status") === "cancelled" });
+        setStep(10);
+        setMaxReached(10);
+        window.history.replaceState(null, "", window.location.pathname);
       }
     } catch { /* ignore */ }
     const apply = async (uid: string | null, email: string | null) => {
@@ -281,7 +294,7 @@ export function RegisterFlow() {
             {step === 7 && <Photo {...props} userId={userId} />}
             {step === 8 && <Ticket {...props} />}
             {step === 9 && <Review {...props} edit={edit} userId={userId} onPaid={(m) => { setPaid(m); go(11); }} />}
-            {step === 10 && <PaymentStep {...props} onPaid={(m) => { setPaid(m); try { sessionStorage.removeItem(DRAFT_KEY); } catch { /* */ } go(11); }} />}
+            {step === 10 && (!returnRef || userId) && <PaymentStep key={returnRef?.txRef ?? "pay"} {...props} returnRef={returnRef} onPaid={(m) => { setPaid(m); try { sessionStorage.removeItem(DRAFT_KEY); } catch { /* */ } go(11); }} />}
             {step === 11 && <YoureIn name={d.fullName} reg={paid} />}
           </main>
         </div>
@@ -787,33 +800,86 @@ function Review({ d, go, edit, back, userId, onPaid }: StepProps & { edit: (i: n
   );
 }
 
-function PaymentStep({ d, back, onPaid }: StepProps & { onPaid: (m: Awaited<ReturnType<typeof getMyRegistration>>) => void }) {
+type PayState = "loading" | "ready" | "redirecting" | "verifying" | "not_configured" | "no_registration" | "network" | "error"
+  | "price_changed" | "unavailable" | "cancelled" | "failed" | "mismatch" | "pending" | "verify_unavailable" | "not_found";
+
+const PAY_MSG: Partial<Record<PayState, { title: string; body: string; alert?: boolean }>> = {
+  cancelled: { title: "Your payment was cancelled.", body: "Your seat isn't confirmed yet. You can try again whenever you're ready." },
+  failed: { title: "That payment didn't go through.", body: "Your seat isn't confirmed yet. Nothing was taken — you can try again.", alert: true },
+  mismatch: { title: "We couldn't confirm the payment details.", body: "Please contact us before trying again.", alert: true },
+  pending: { title: "We're checking your payment.", body: "Please give us a moment. Please don't pay again just yet." },
+  verify_unavailable: { title: "We couldn't confirm that payment yet.", body: "Please don't pay again just yet. Check again in a moment.", alert: true },
+  not_found: { title: "We couldn't find that payment.", body: "If you were charged, please contact us before trying again.", alert: true },
+  price_changed: { title: "This ticket's price has changed.", body: "Please go back to choose your ticket again before paying.", alert: true },
+  unavailable: { title: "This ticket is no longer on sale.", body: "Please go back and choose another ticket.", alert: true },
+  error: { title: "We couldn't open secure payment.", body: "Nothing has been charged. Please try again.", alert: true },
+  network: { title: "Your connection seems to have dropped.", body: "Please try again. If you already paid, don't pay again — just check again.", alert: true },
+};
+
+function PaymentStep({ d, back, onPaid, returnRef }: StepProps & { onPaid: (m: Awaited<ReturnType<typeof getMyRegistration>>) => void; returnRef: { txRef: string; cancelled: boolean } | null }) {
   const pay = useServerFn(startPayment);
+  const verify = useServerFn(verifyPayment);
   const fetchMine = useServerFn(getMyRegistration);
-  const [state, setState] = useState<"loading" | "not_configured" | "no_registration" | "network">("loading");
+  const [state, setState] = useState<PayState>("loading");
   const [reg, setReg] = useState<Awaited<ReturnType<typeof getMyRegistration>>>(null);
 
-  const run = async () => {
-    setState("loading");
+  const load = async () => {
     try {
-      const [r, mine] = await Promise.all([pay(), fetchMine()]);
+      const mine = await fetchMine();
       setReg(mine);
-      if (r.status === "already_paid") return onPaid(mine);
+      if (!mine) return setState("no_registration");
+      if (mine.status === "paid") return onPaid(mine);
+      setState("ready");
+    } catch { setState("network"); }
+  };
+
+  const check = async (ref: { txRef: string; cancelled: boolean }) => {
+    setState("verifying");
+    try {
+      const { outcome } = await verify({ data: ref });
+      if (outcome === "paid") { const mine = await fetchMine(); return onPaid(mine); }
+      const mine = await fetchMine().catch(() => null);
+      setReg(mine);
+      setState(outcome === "unavailable" ? "verify_unavailable" : outcome);
+    } catch { setState("network"); }
+  };
+
+  const startCheckout = async () => {
+    setState("redirecting");
+    try {
+      const r = await pay();
+      if (r.status === "redirect") { window.location.assign(r.link); return; }
+      if (r.status === "already_paid") { const mine = await fetchMine(); return onPaid(mine); }
       setState(r.status);
     } catch { setState("network"); }
   };
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { run(); }, []);
+  useEffect(() => { if (returnRef) check(returnRef); else load(); }, []);
+
+  const msg = PAY_MSG[state];
+  const canRetry = state === "ready" || state === "cancelled" || state === "failed" || state === "error";
+  const canRecheck = returnRef && (state === "pending" || state === "verify_unavailable" || state === "network");
 
   return (
     <section>
       <StepHead n={11} title="Almost there." sub={`Your ${reg?.ticketName ?? "ticket"} is being held for you, ${d.fullName.split(" ")[0] || "love"}.`} />
-      {state === "loading" && <p role="status" className="font-sans text-sm text-lavender">Getting payment ready…</p>}
-      {state === "network" && (
-        <div role="alert" className="space-y-4">
-          <p className="font-serif text-xl text-ivory">Your connection seems to have dropped.</p>
-          <p className="font-sans text-sm text-lavender">Nothing has been charged. Please try again.</p>
-          <Btn variant="ghost" onClick={run}>Try again</Btn>
+      {(state === "loading" || state === "verifying" || state === "redirecting") && (
+        <p role="status" className="font-sans text-sm text-lavender">
+          {state === "verifying" ? "We're checking your payment. Please give us a moment." : state === "redirecting" ? "Opening secure payment…" : "Getting payment ready…"}
+        </p>
+      )}
+      {reg && reg.status === "pending" && state !== "loading" && state !== "verifying" && (
+        <div className="mb-6 border border-blush/30 bg-plum/50 p-6">
+          <p className="font-sans text-[0.65rem] uppercase tracking-[0.3em] text-blush">Amount due</p>
+          <p className="mt-2 font-serif text-5xl text-ivory">{naira(reg.amountKobo)}</p>
+          <p className="mt-1 font-sans text-sm text-lavender">{reg.ticketName} · waiting for payment</p>
+        </div>
+      )}
+      {msg && (
+        <div role={msg.alert ? "alert" : "status"} className="mb-6 border-l-2 border-rose pl-5">
+          <p className="font-serif text-2xl text-ivory">{msg.title}</p>
+          <p className="mt-2 font-sans text-sm leading-6 text-lavender">{msg.body}</p>
         </div>
       )}
       {state === "no_registration" && (
@@ -823,27 +889,19 @@ function PaymentStep({ d, back, onPaid }: StepProps & { onPaid: (m: Awaited<Retu
         </div>
       )}
       {state === "not_configured" && (
-        <div className="space-y-6">
-          {reg && (
-            <div className="border border-blush/30 bg-plum/50 p-6">
-              <p className="font-sans text-[0.65rem] uppercase tracking-[0.3em] text-blush">Amount due</p>
-              <p className="mt-2 font-serif text-5xl text-ivory">{naira(reg.amountKobo)}</p>
-              <p className="mt-1 font-sans text-sm text-lavender">{reg.ticketName} · status: waiting for payment</p>
-            </div>
-          )}
-          <div role="status" className="border-l-2 border-rose pl-5">
-            <p className="font-serif text-2xl text-ivory">Online payment opens very soon.</p>
-            <p className="mt-2 font-sans text-sm leading-6 text-lavender">
-              Your details are saved and your seat is held as pending. Secure card and bank payment is still being switched on by the PCH team — please don't send money anywhere else.
-              Come back to this page and sign in with your email when payment opens, and you'll pick up right here.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Btn variant="ghost" onClick={run}>Check again</Btn>
-            <Btn variant="text" onClick={back}>← Back to review</Btn>
-          </div>
+        <div role="status" className="mb-6 border-l-2 border-rose pl-5">
+          <p className="font-serif text-2xl text-ivory">Online payment opens very soon.</p>
+          <p className="mt-2 font-sans text-sm leading-6 text-lavender">Your details are saved and your seat is held as pending. Please don't send money anywhere else — come back and sign in with your email when payment opens.</p>
         </div>
       )}
+      <div className="flex flex-col gap-3 sm:flex-row">
+        {canRetry && <Btn onClick={startCheckout}>{state === "ready" ? `Pay ${reg ? naira(reg.amountKobo) : ""} securely →` : "Try payment again"}</Btn>}
+        {canRecheck && returnRef && <Btn variant="ghost" onClick={() => check(returnRef)}>Check again</Btn>}
+        {state === "network" && !returnRef && <Btn variant="ghost" onClick={load}>Try again</Btn>}
+        {state === "not_configured" && <Btn variant="ghost" onClick={load}>Check again</Btn>}
+        {(canRetry || state === "price_changed" || state === "unavailable" || state === "not_configured") && <Btn variant="text" onClick={back}>← Back to review</Btn>}
+      </div>
+      {state === "ready" && <p className="mt-4 font-sans text-xs text-lavender/70">You'll be taken to Flutterwave's secure checkout, then brought back here.</p>}
     </section>
   );
 }
