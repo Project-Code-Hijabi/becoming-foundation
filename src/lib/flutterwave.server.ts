@@ -85,7 +85,7 @@ async function fetchByReference(txRef: string): Promise<FwTx | null | "error"> {
  * Idempotent: verifies a payment with Flutterwave and, only if everything matches,
  * marks payment successful, registration paid, and issues the badge (server-generated token).
  */
-export async function verifyAndFinalize(txRef: string, opts: { clientSaysCancelled?: boolean } = {}): Promise<VerifyOutcome> {
+export async function verifyAndFinalize(txRef: string, opts: { clientSaysCancelled?: boolean | undefined } = {}): Promise<VerifyOutcome> {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   const { data: pay } = await supabaseAdmin
