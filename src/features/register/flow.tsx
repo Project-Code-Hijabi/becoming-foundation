@@ -5,7 +5,7 @@ import { EVENT, naira } from "@/features/ball/data";
 import { cn } from "@/lib/utils";
 import { COUNTRIES, INTERESTS } from "./countries";
 import {
-  createRegistration, getMyRegistration, getTicketTypes, startPayment,
+  createRegistration, getMyRegistration, getTicketTypes, startPayment, verifyPayment,
   type PublicTicket, type RegistrationResult,
 } from "@/lib/registration.functions";
 
