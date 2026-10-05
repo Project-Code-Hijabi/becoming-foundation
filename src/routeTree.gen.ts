@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as BallIndexRouteImport } from './routes/ball.index'
 import { Route as BallRegisterRouteImport } from './routes/ball.register'
 import { Route as ApiPublicFlutterwaveWebhookRouteImport } from './routes/api/public/flutterwave-webhook'
+import { Route as BallAppLoginRouteImport } from './routes/ball.app_.login'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,18 +36,25 @@ const ApiPublicFlutterwaveWebhookRoute =
     path: '/api/public/flutterwave-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const BallAppLoginRoute = BallAppLoginRouteImport.update({
+  id: '/ball/app_/login',
+  path: '/ball/app/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/ball/register': typeof BallRegisterRoute
   '/ball/': typeof BallIndexRoute
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
+  '/ball/app/login': typeof BallAppLoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/ball/register': typeof BallRegisterRoute
   '/ball': typeof BallIndexRoute
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
+  '/ball/app/login': typeof BallAppLoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -54,19 +62,30 @@ export interface FileRoutesById {
   '/ball/register': typeof BallRegisterRoute
   '/ball/': typeof BallIndexRoute
   '/api/public/flutterwave-webhook': typeof ApiPublicFlutterwaveWebhookRoute
+  '/ball/app_/login': typeof BallAppLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/ball/register' | '/ball/' | '/api/public/flutterwave-webhook'
+    | '/'
+    | '/ball/register'
+    | '/ball/'
+    | '/api/public/flutterwave-webhook'
+    | '/ball/app/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/ball/register' | '/ball' | '/api/public/flutterwave-webhook'
+  to:
+    | '/'
+    | '/ball/register'
+    | '/ball'
+    | '/api/public/flutterwave-webhook'
+    | '/ball/app/login'
   id:
     | '__root__'
     | '/'
     | '/ball/register'
     | '/ball/'
     | '/api/public/flutterwave-webhook'
+    | '/ball/app_/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -74,6 +93,7 @@ export interface RootRouteChildren {
   BallRegisterRoute: typeof BallRegisterRoute
   BallIndexRoute: typeof BallIndexRoute
   ApiPublicFlutterwaveWebhookRoute: typeof ApiPublicFlutterwaveWebhookRoute
+  BallAppLoginRoute: typeof BallAppLoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -106,6 +126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicFlutterwaveWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ball/app_/login': {
+      id: '/ball/app_/login'
+      path: '/ball/app/login'
+      fullPath: '/ball/app/login'
+      preLoaderRoute: typeof BallAppLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -114,6 +141,7 @@ const rootRouteChildren: RootRouteChildren = {
   BallRegisterRoute: BallRegisterRoute,
   BallIndexRoute: BallIndexRoute,
   ApiPublicFlutterwaveWebhookRoute: ApiPublicFlutterwaveWebhookRoute,
+  BallAppLoginRoute: BallAppLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
