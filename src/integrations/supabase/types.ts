@@ -973,6 +973,19 @@ export type Database = {
           whatsapp: string
         }[]
       }
+      network_directory: {
+        Args: never
+        Returns: {
+          discoverable: boolean
+          full_name: string
+          id: string
+          interests: string[]
+          location: string
+          organisation: string
+          profession: string
+        }[]
+      }
+      staff_event_stats: { Args: never; Returns: Json }
       staff_lookup_badge: {
         Args: { _qr_token: string }
         Returns: {
