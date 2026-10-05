@@ -8,7 +8,7 @@ const description = "Sign in to your Ball pass, programme and connections for Be
 export const Route = createFileRoute("/ball/app_/login")({
   ssr: false,
   validateSearch: (s: Record<string, unknown>) => ({
-    redirect: typeof s.redirect === "string" && s.redirect.startsWith("/ball/") ? s.redirect : undefined,
+    redirect: typeof s["redirect"] === "string" && s["redirect"].startsWith("/ball/") ? (s["redirect"] as string) : undefined,
   }),
   head: () => ({
     meta: [
