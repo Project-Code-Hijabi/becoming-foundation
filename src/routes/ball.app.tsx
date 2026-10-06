@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { gate, signOut } from "@/features/portal/shared";
+import { gate } from "@/features/portal/shared";
+import { AttendeeApp } from "@/features/portal/attendee";
 
 export const Route = createFileRoute("/ball/app")({
   ssr: false,
@@ -7,23 +8,27 @@ export const Route = createFileRoute("/ball/app")({
   head: () => ({
     meta: [
       { title: "Your Ball — PCH Annual Ball 2026" },
-      { name: "description", content: "Your private space for Becoming, 14 November 2026." },
+      { name: "description", content: "Your Ball Pass, programme, connections and Becoming space for 14 November 2026." },
       { property: "og:title", content: "Your Ball — PCH Annual Ball 2026" },
-      { property: "og:description", content: "Your private space for Becoming, 14 November 2026." },
+      { property: "og:description", content: "Your Ball Pass, programme, connections and Becoming space for 14 November 2026." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: AppHome,
+  component: Page,
 });
 
-function AppHome() {
-  const { user } = Route.useRouteContext();
+function Page() {
+  const { user, isAdmin, isStaff } = Route.useRouteContext();
   return (
-    <main className="velvet-bg grain min-h-screen px-6 py-16 text-ivory">
-      <h1 className="font-serif text-5xl">You're in. 💜</h1>
-      <p className="mt-4 text-lavender">Signed in as {user.email}.</p>
-      <button onClick={signOut} className="mt-8 underline underline-offset-4">Sign out</button>
-    </main>
+    <>
+      {(isAdmin || isStaff) && (
+        <div className="bg-ink px-5 py-2 text-center text-xs text-lavender">
+          {isAdmin && <a className="mr-4 underline" href="/ball/admin">Admin</a>}
+          {isStaff && <a className="underline" href="/ball/staff">Door / staff</a>}
+        </div>
+      )}
+      <AttendeeApp userId={user.id} email={user.email} />
+    </>
   );
 }
