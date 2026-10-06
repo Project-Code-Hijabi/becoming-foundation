@@ -425,8 +425,8 @@ function Profile({ userId, email }: { userId: string; email: string }) {
     if (!form["full_name"]?.trim()) { setMsg("Please add your name."); return; }
     setBusy(true); setMsg(null);
     const clean = Object.fromEntries(Object.entries(form).map(([k, v]) => [k, v.trim().slice(0, k === "bio" ? 1000 : 200) || null]));
-    const a = await supabase.from("profiles").update(clean).eq("id", userId);
-    const b = await supabase.from("profile_privacy").update(priv).eq("profile_id", userId);
+    const a = await supabase.from("profiles").update(clean as { full_name: string | null }).eq("id", userId);
+    const b = await supabase.from("profile_privacy").update(priv as { networking_enabled: boolean }).eq("profile_id", userId);
     setBusy(false);
     setMsg(a.error || b.error ? "Your changes didn't save. Please try again." : "Saved. 💜");
   }
