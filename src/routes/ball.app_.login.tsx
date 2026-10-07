@@ -33,7 +33,7 @@ function Login() {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((e) => { if (e === "PASSWORD_RECOVERY") setMode("reset"); });
-    if (window.location.hash.includes("type=recovery")) setMode("reset");
+    if (/type=(recovery|invite)/.test(window.location.hash)) setMode("reset");
     return () => data.subscription.unsubscribe();
   }, []);
 

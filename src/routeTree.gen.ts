@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BallIndexRouteImport } from './routes/ball.index'
+import { Route as BallAdminRouteImport } from './routes/ball.admin'
 import { Route as BallAppRouteImport } from './routes/ball.app'
 import { Route as BallRegisterRouteImport } from './routes/ball.register'
 import { Route as BallStaffRouteImport } from './routes/ball.staff'
@@ -25,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
 const BallIndexRoute = BallIndexRouteImport.update({
   id: '/ball/',
   path: '/ball/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BallAdminRoute = BallAdminRouteImport.update({
+  id: '/ball/admin',
+  path: '/ball/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BallAppRoute = BallAppRouteImport.update({
@@ -56,6 +62,7 @@ const BallAppLoginRoute = BallAppLoginRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/ball/admin': typeof BallAdminRoute
   '/ball/app': typeof BallAppRoute
   '/ball/register': typeof BallRegisterRoute
   '/ball/staff': typeof BallStaffRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/ball/admin': typeof BallAdminRoute
   '/ball/app': typeof BallAppRoute
   '/ball/register': typeof BallRegisterRoute
   '/ball/staff': typeof BallStaffRoute
@@ -75,6 +83,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/ball/admin': typeof BallAdminRoute
   '/ball/app': typeof BallAppRoute
   '/ball/register': typeof BallRegisterRoute
   '/ball/staff': typeof BallStaffRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/ball/admin'
     | '/ball/app'
     | '/ball/register'
     | '/ball/staff'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/ball/admin'
     | '/ball/app'
     | '/ball/register'
     | '/ball/staff'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/ball/admin'
     | '/ball/app'
     | '/ball/register'
     | '/ball/staff'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BallAdminRoute: typeof BallAdminRoute
   BallAppRoute: typeof BallAppRoute
   BallRegisterRoute: typeof BallRegisterRoute
   BallStaffRoute: typeof BallStaffRoute
@@ -136,6 +149,13 @@ declare module '@tanstack/react-router' {
       path: '/ball'
       fullPath: '/ball/'
       preLoaderRoute: typeof BallIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ball/admin': {
+      id: '/ball/admin'
+      path: '/ball/admin'
+      fullPath: '/ball/admin'
+      preLoaderRoute: typeof BallAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ball/app': {
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BallAdminRoute: BallAdminRoute,
   BallAppRoute: BallAppRoute,
   BallRegisterRoute: BallRegisterRoute,
   BallStaffRoute: BallStaffRoute,
