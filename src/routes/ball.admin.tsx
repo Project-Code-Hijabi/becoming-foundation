@@ -219,7 +219,7 @@ function Announcements() {
 
 function EditableAnnouncement({ a, onChange }: { a: { id: string; title: string; body: string; is_published: boolean }; onChange: () => void }) {
   const [edit, setEdit] = useState(false); const [t, setT] = useState(a.title); const [b, setB] = useState(a.body);
-  const upd = async (v: Record<string, unknown>) => { await supabase.from("announcements").update(v).eq("id", a.id); onChange(); };
+  const upd = async (v: { title?: string; body?: string; is_published?: boolean }) => { await supabase.from("announcements").update(v).eq("id", a.id); onChange(); };
   return (
     <li className={card}>
       {edit ? (
