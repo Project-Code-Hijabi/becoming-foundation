@@ -985,6 +985,15 @@ export type Database = {
           profession: string
         }[]
       }
+      staff_confirmed_attendees: {
+        Args: { _offset?: number; _search?: string }
+        Returns: {
+          attendee_code: string
+          checked_in_at: string
+          full_name: string
+          ticket_name: string
+        }[]
+      }
       staff_event_stats: { Args: never; Returns: Json }
       staff_lookup_badge: {
         Args: { _qr_token: string }
