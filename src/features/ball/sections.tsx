@@ -340,7 +340,7 @@ function Conversation({ eyebrow, title, line, people, pending, pendingCount }: {
 export function Conversations() {
   return (
     <EditorialSection label="Conversations" className="space-y-40 bg-ink">
-      <Conversation eyebrow="The Panel" title={PANEL.title} line={PANEL.line} people={PANEL.people} pending={PANEL.pending} pendingCount={2} />
+      <Conversation eyebrow="The Panel" title={PANEL.title} line={PANEL.line} people={PANEL.people} pending={PANEL.pending} pendingCount={1} />
       <Conversation eyebrow="The Fireside Chat" title={FIRESIDE.title} line={FIRESIDE.line} people={FIRESIDE.people} pending={FIRESIDE.pending} pendingCount={1} />
     </EditorialSection>
   );
