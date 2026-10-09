@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import jsQR from "jsqr";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { gate, signOut, useLoad, must, State } from "@/features/portal/shared";
 import { staffLookup, staffCheckIn, type LookupResult } from "@/lib/staff.functions";
@@ -53,11 +54,12 @@ function Staff() {
     try {
       const r = await checkIn({ data: { badgeId: result.badgeId } });
       setDone(r.result === "checked_in" ? "Checked in. Welcome her in. 💜" : r.result === "already" ? "Already checked in." : "Check-in was refused. Ask an admin.");
-      if (r.result !== "refused") void stats.reload();
+      if (r.result !== "refused") { void stats.reload(); setRosterVersion((v) => v + 1); }
     } catch { setDone("Check-in didn't go through. Try again."); }
     setBusy(false);
   }
   const s = stats.data?.s;
+  const [rosterVersion, setRosterVersion] = useState(0);
 
   return (
     <div className="min-h-screen bg-ink text-ivory">
@@ -92,6 +94,8 @@ function Staff() {
 
         {result && <Result r={result} done={done} busy={busy} onCheckIn={doCheckIn} onNext={() => { setResult(null); setDone(null); setManual(""); setScanning(true); }} />}
 
+        <ConfirmedAttendees version={rosterVersion} />
+
         {s && s.recent.length > 0 && (
           <section>
             <h2 className="text-xs uppercase tracking-[0.25em] text-lavender">Recent check-ins</h2>
@@ -103,6 +107,38 @@ function Staff() {
         {stats.data?.a.map((a) => <div key={a.id} className="rounded-sm border border-lavender/20 p-3 text-sm"><p className="font-medium">{a.title}</p><p className="mt-1 text-lavender">{a.body}</p></div>)}
       </main>
     </div>
+  );
+}
+
+function ConfirmedAttendees({ version }: { version: number }) {
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
+  const [offset, setOffset] = useState(0);
+  const roster = useLoad(async () => must(await supabase.rpc("staff_confirmed_attendees", { _search: query, _offset: offset })), [query, offset, version]);
+  return (
+    <section className="border-t border-border pt-5">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-lg font-semibold">Confirmed attendees</h2>
+        <Button variant="ghost" size="sm" onClick={roster.reload}>Refresh</Button>
+      </div>
+      <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); setQuery(search.trim()); setOffset(0); }}>
+        <input aria-label="Search confirmed attendees" placeholder="Search name or attendee code" value={search} onChange={(e) => setSearch(e.target.value)} className="min-w-0 flex-1 rounded-sm border border-input bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground" />
+        <Button type="submit" variant="secondary">Search</Button>
+      </form>
+      <State {...roster} empty={roster.data?.length === 0 && "No confirmed attendees match this search."}>
+        <ul className="mt-3 divide-y divide-border">
+          {roster.data?.map((a) => <li key={a.attendee_code} className="flex items-start justify-between gap-3 py-3 text-sm">
+            <div className="min-w-0"><p className="break-words font-semibold">{a.full_name ?? "Attendee"}</p><p className="mt-1 text-muted-foreground">{a.ticket_name}</p><p className="mt-1 break-all font-mono text-xs text-lavender">{a.attendee_code}</p></div>
+            <p className="shrink-0 text-right text-xs text-blush">{a.checked_in_at ? "Checked in" : "Expected"}{a.checked_in_at && <span className="mt-1 block text-muted-foreground">{new Date(a.checked_in_at).toLocaleTimeString("en-NG", { timeZone: "Africa/Lagos", hour: "numeric", minute: "2-digit" })}</span>}</p>
+          </li>)}
+        </ul>
+      </State>
+      <div className="mt-3 flex items-center justify-between">
+        <Button variant="outline" size="sm" disabled={offset === 0 || roster.loading} onClick={() => setOffset(Math.max(0, offset - 50))}>Previous</Button>
+        <span className="text-xs text-muted-foreground">Page {offset / 50 + 1}</span>
+        <Button variant="outline" size="sm" disabled={(roster.data?.length ?? 0) < 50 || roster.loading} onClick={() => setOffset(offset + 50)}>Next</Button>
+      </div>
+    </section>
   );
 }
 

@@ -71,6 +71,7 @@ export const PANEL = {
       bio: "Petroleum Engineering background, with experience in technical leadership and technology communities, and a public speaker on emerging tech trends and careers.",
     },
     { name: "Taofeeqah Balogun", role: "Panelist", title: "Cybersecurity Manager, CyberSOC Africa", bio: null },
+    { name: "Khadijah Abiola", role: "Panelist & Hackathon Judge", bio: null },
   ] as Person[],
   pending: "Joining soon",
 };

@@ -24,25 +24,25 @@ export const Route = createFileRoute("/ball/admin")({
 
 const TABS = ["Overview", "Attendees", "Staff", "Announcements", "Programme", "Content"] as const;
 type Tab = (typeof TABS)[number];
-const card = "rounded-sm border border-plum/15 bg-card p-4";
-const btn = "rounded-sm bg-plum px-3 py-2 text-sm text-ivory hover:bg-velvet disabled:opacity-50";
-const field = "w-full rounded-sm border border-plum/25 bg-background px-3 py-2 text-sm";
+const card = "rounded-sm border border-border bg-card p-4";
+const btn = "rounded-sm bg-secondary px-3 py-2 text-sm text-ivory hover:bg-velvet disabled:opacity-50";
+const field = "w-full rounded-sm border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground";
 
 function Admin() {
   const [tab, setTab] = useState<Tab>("Overview");
   return (
-    <div className="min-h-screen bg-background text-plum">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-plum/15 bg-ink px-5 py-3 text-ivory">
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-ink px-5 py-3 text-ivory">
         <p className="text-xs uppercase tracking-[0.25em] text-blush">PCH Ball · Admin</p>
         <div className="flex gap-4 text-xs text-lavender">
           <a href="/ball/staff" className="underline">Door</a><a href="/ball/app" className="underline">My Ball</a>
           <button onClick={signOut} className="underline">Sign out</button>
         </div>
       </header>
-      <nav className="flex gap-1 overflow-x-auto border-b border-plum/15 px-3" aria-label="Admin sections">
+      <nav className="flex gap-1 overflow-x-auto border-b border-border px-3" aria-label="Admin sections">
         {TABS.map((t) => (
           <button key={t} onClick={() => setTab(t)} aria-current={tab === t ? "page" : undefined}
-            className={`whitespace-nowrap px-3 py-3 text-sm ${tab === t ? "border-b-2 border-rose font-semibold" : "text-plum/70"}`}>{t}</button>
+            className={`whitespace-nowrap px-3 py-3 text-sm ${tab === t ? "border-b-2 border-rose font-semibold" : "text-muted-foreground"}`}>{t}</button>
         ))}
       </nav>
       <main className="mx-auto max-w-6xl p-4">
@@ -92,22 +92,22 @@ function Overview() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               {[["Registrations", regs.length], ["Paid attendees", paid.length], ["Pending", by("pending")], ["Cancelled / refunded", by("cancelled") + by("refunded")], ["Checked in", checked.size], ["Revenue", naira(revenue)], ["Connections made", conns], ["Still expected", Math.max(0, paid.length - checked.size)]].map(([k, v]) => (
-                <div key={k as string} className={card}><p className="text-2xl font-semibold">{v}</p><p className="text-xs uppercase tracking-wider text-plum/60">{k}</p></div>
+                <div key={k as string} className={card}><p className="text-2xl font-semibold">{v}</p><p className="text-xs uppercase tracking-wider text-muted-foreground">{k}</p></div>
               ))}
             </div>
             <section className={card}>
               <h2 className="font-semibold">Ticket sales</h2>
-              <table className="mt-2 w-full text-sm"><thead><tr className="text-left text-plum/60"><th>Ticket</th><th>Price</th><th>Paid</th><th>Remaining</th></tr></thead><tbody>
+              <table className="mt-2 w-full text-sm"><thead><tr className="text-left text-muted-foreground"><th>Ticket</th><th>Price</th><th>Paid</th><th>Remaining</th></tr></thead><tbody>
                 {tickets.map((t) => { const sold = paid.filter((r) => r.ticket_types?.name === t.name).length; return (
-                  <tr key={t.id} className="border-t border-plum/10"><td className="py-2">{t.name}{!t.is_active && " (inactive)"}</td><td>{naira(t.price_kobo)}</td><td>{sold}</td><td>{t.quantity_cap == null ? "No cap" : Math.max(0, t.quantity_cap - sold)}</td></tr>); })}
+                  <tr key={t.id} className="border-t border-border"><td className="py-2">{t.name}{!t.is_active && " (inactive)"}</td><td>{naira(t.price_kobo)}</td><td>{sold}</td><td>{t.quantity_cap == null ? "No cap" : Math.max(0, t.quantity_cap - sold)}</td></tr>); })}
               </tbody></table>
             </section>
             <div className="grid gap-4 md:grid-cols-2">
               <section className={card}><h2 className="font-semibold">Recent registrations</h2>
-                <ul className="mt-2 divide-y divide-plum/10 text-sm">{regs.slice(0, 8).map((r) => <li key={r.id} className="flex justify-between py-2"><span>{name(r.user_id)} · {r.ticket_types?.name}</span><span className="text-plum/60">{r.status}</span></li>)}</ul>
+                <ul className="mt-2 divide-y divide-border text-sm">{regs.slice(0, 8).map((r) => <li key={r.id} className="flex justify-between py-2"><span>{name(r.user_id)} · {r.ticket_types?.name}</span><span className="text-muted-foreground">{r.status}</span></li>)}</ul>
               </section>
               <section className={card}><h2 className="font-semibold">Recent payments</h2>
-                <ul className="mt-2 divide-y divide-plum/10 text-sm">{pays.map((p) => <li key={p.tx_ref} className="flex justify-between py-2"><span className="font-mono text-xs">{p.tx_ref}</span><span>{naira(p.amount_kobo)} · {p.status}</span></li>)}</ul>
+                <ul className="mt-2 divide-y divide-border text-sm">{pays.map((p) => <li key={p.tx_ref} className="flex justify-between py-2"><span className="font-mono text-xs">{p.tx_ref}</span><span>{naira(p.amount_kobo)} · {p.status}</span></li>)}</ul>
               </section>
             </div>
           </div>
@@ -132,12 +132,12 @@ function Attendees() {
             </select>
           </div>
           <div className="overflow-x-auto"><table className="w-full min-w-[900px] text-sm">
-            <thead><tr className="text-left text-plum/60"><th className="py-2">Name</th><th>Email</th><th>Phone / WhatsApp</th><th>Ticket</th><th>Code</th><th>Status</th><th>Checked in</th><th>Notes</th></tr></thead>
+            <thead><tr className="text-left text-muted-foreground"><th className="py-2">Name</th><th>Email</th><th>Phone / WhatsApp</th><th>Ticket</th><th>Code</th><th>Status</th><th>Checked in</th><th>Notes</th></tr></thead>
             <tbody>{d.data.regs.filter((r) => status === "all" || r.status === status).map((r) => ({ r, p: d.data!.profs.find((x) => x.id === r.user_id) }))
               .filter(({ r, p }) => !q || [p?.full_name, p?.email, r.attendee_code].some((v) => v?.toLowerCase().includes(q.toLowerCase())))
               .map(({ r, p }) => (
-                <tr key={r.id} className="border-t border-plum/10 align-top">
-                  <td className="py-2 font-medium">{p?.full_name ?? "—"}<div className="text-xs text-plum/60">{[p?.profession, p?.organisation].filter(Boolean).join(" · ")}</div></td>
+                <tr key={r.id} className="border-t border-border align-top">
+                  <td className="py-2 font-medium">{p?.full_name ?? "—"}<div className="text-xs text-muted-foreground">{[p?.profession, p?.organisation].filter(Boolean).join(" · ")}</div></td>
                   <td>{p?.email}</td><td>{p?.phone ?? p?.whatsapp ?? "—"}</td><td>{r.ticket_types?.name}</td>
                   <td className="font-mono text-xs">{r.attendee_code}</td><td>{r.status}</td>
                   <td>{d.data!.checked.get(r.user_id) ? new Date(d.data!.checked.get(r.user_id)!).toLocaleTimeString("en-NG", { timeZone: "Africa/Lagos", hour: "numeric", minute: "2-digit" }) : "—"}</td>
@@ -168,7 +168,7 @@ function Staff() {
     <div className="space-y-5">
       <form onSubmit={send} className={`${card} space-y-3`}>
         <h2 className="font-semibold">Invite a staff member</h2>
-        <p className="text-sm text-plum/70">She'll receive an email to set her own password, then can use the Door scanner. You never set her password.</p>
+        <p className="text-sm text-muted-foreground">She'll receive an email to set her own password, then can use the Door scanner. You never set her password.</p>
         <div className="flex flex-wrap gap-2">
           <label htmlFor="se" className="sr-only">Staff email</label>
           <input id="se" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="staff@email.com" className={`${field} max-w-sm`} />
@@ -179,10 +179,10 @@ function Staff() {
       <section className={card}>
         <h2 className="font-semibold">Current staff</h2>
         <State {...d} tone="light" empty={d.data?.length === 0 && "No staff yet."}>
-          <ul className="mt-2 divide-y divide-plum/10 text-sm">
+          <ul className="mt-2 divide-y divide-border text-sm">
             {d.data?.map((s) => (
               <li key={s.userId} className="flex items-center justify-between gap-2 py-2">
-                <span>{s.name ?? s.email}<span className="block text-xs text-plum/60">{s.email}</span></span>
+                <span>{s.name ?? s.email}<span className="block text-xs text-muted-foreground">{s.email}</span></span>
                 <button onClick={async () => { if (confirm(`Remove staff access for ${s.email}?`)) { await remove({ data: { userId: s.userId } }); void d.reload(); } }} className="text-xs underline">Remove</button>
               </li>))}
           </ul>
@@ -225,7 +225,7 @@ function EditableAnnouncement({ a, onChange }: { a: { id: string; title: string;
       {edit ? (
         <div className="space-y-2"><input aria-label="Title" value={t} onChange={(e) => setT(e.target.value)} className={field} /><textarea aria-label="Message" value={b} onChange={(e) => setB(e.target.value)} rows={3} className={field} />
           <button className={btn} onClick={async () => { await upd({ title: t, body: b }); setEdit(false); }}>Save</button></div>
-      ) : (<><p className="font-medium">{a.title} {!a.is_published && <span className="text-xs text-plum/60">(draft)</span>}</p><p className="mt-1 text-sm text-plum/80">{a.body}</p></>)}
+      ) : (<><p className="font-medium">{a.title} {!a.is_published && <span className="text-xs text-muted-foreground">(draft)</span>}</p><p className="mt-1 text-sm text-foreground">{a.body}</p></>)}
       <div className="mt-2 flex gap-3 text-xs">
         <button className="underline" onClick={() => upd({ is_published: !a.is_published })}>{a.is_published ? "Unpublish" : "Publish"}</button>
         <button className="underline" onClick={() => setEdit(!edit)}>{edit ? "Cancel" : "Edit"}</button>
@@ -259,7 +259,7 @@ function Programme() {
       <State {...d} tone="light" empty={d.data?.length === 0 && "No sessions yet."}>
         <ul className="space-y-2">{d.data?.map((p) => (
           <li key={p.id} className={`${card} flex flex-wrap items-center justify-between gap-2`}>
-            <span><span className="font-medium">{p.title}</span> <span className="text-xs text-plum/60">{p.session_type} · {fmtTime(p.starts_at)}{!p.is_published && " · draft"}</span></span>
+            <span><span className="font-medium">{p.title}</span> <span className="text-xs text-muted-foreground">{p.session_type} · {fmtTime(p.starts_at)}{!p.is_published && " · draft"}</span></span>
             <span className="flex gap-3 text-xs">
               <button className="underline" onClick={async () => { await supabase.from("programme_items").update({ is_published: !p.is_published }).eq("id", p.id); void d.reload(); }}>{p.is_published ? "Unpublish" : "Publish"}</button>
               <button className="underline" onClick={async () => { if (confirm("Delete this session?")) { await supabase.from("programme_items").delete().eq("id", p.id); void d.reload(); } }}>Delete</button>
@@ -319,12 +319,12 @@ function Content() {
 }
 
 function Rows({ rows, onToggle }: { rows: { id: string; label: string; sub: string; pub: boolean }[]; onToggle: (id: string, v: boolean) => void }) {
-  if (!rows.length) return <p className="mt-3 text-sm text-plum/60">Nothing here yet.</p>;
+  if (!rows.length) return <p className="mt-3 text-sm text-muted-foreground">Nothing here yet.</p>;
   return (
-    <ul className="mt-3 divide-y divide-plum/10 text-sm">
+    <ul className="mt-3 divide-y divide-border text-sm">
       {rows.map((r) => (
         <li key={r.id} className="flex items-center justify-between gap-2 py-2">
-          <span>{r.label}<span className="block text-xs text-plum/60">{r.sub}</span></span>
+          <span>{r.label}<span className="block text-xs text-muted-foreground">{r.sub}</span></span>
           <button className="text-xs underline" onClick={() => onToggle(r.id, !r.pub)}>{r.pub ? "Unpublish" : "Publish"}</button>
         </li>))}
     </ul>
