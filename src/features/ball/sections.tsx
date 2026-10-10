@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
-  AWARDS, EVENT, FIRESIDE, HACKATHON, HONOREE, KEYNOTES, NAV, PANEL, PROGRAMME, TICKETS, naira,
+  AWARDS, EVENT, FIRESIDE, HACKATHON, HACKATHON_JUDGES, HONOREE, KEYNOTES, NAV, PANEL, PROGRAMME, TICKETS, naira,
   type Chapter, type Person, type Team, type Award,
 } from "./data";
 import { EditorialSection, EnterCta, Eyebrow, LightRays, Particles, Reveal, WaxSeal, useInView, Veil } from "./primitives";
@@ -376,6 +376,12 @@ export function Hackathon() {
         <Reveal ink as="h2" className="mt-6 font-serif text-6xl font-light text-ivory md:text-8xl">Built by her.</Reveal>
         <p className="mt-6 max-w-xl font-serif text-xl italic text-ivory/70">Five teams. Real problems. Ideas built into something you can see.</p>
         <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{HACKATHON.map((t, i) => <HackathonCard key={i} t={t} i={i} />)}</div>
+        <div className="mt-12">
+          <p className="text-xs uppercase tracking-[0.3em] text-lavender/70">Judges</p>
+          <ul className="mt-3 flex flex-wrap gap-x-8 gap-y-2 font-serif text-2xl text-ivory">
+            {HACKATHON_JUDGES.map((j) => <li key={j}>{j}</li>)}
+          </ul>
+        </div>
       </div>
     </EditorialSection>
   );
