@@ -15,6 +15,13 @@
       "when": 1791585157743,
       "tag": "0001_staff_confirmed_attendees",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791624421434,
+      "tag": "0002_site_content",
+      "breakpoints": true
     }
   ]
 }
