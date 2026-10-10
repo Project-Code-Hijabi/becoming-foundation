@@ -771,6 +771,7 @@ export type Database = {
           accessibility_notes: string | null
           amount_kobo: number
           attendee_code: string
+          confirmation_email_sent_at: string | null
           created_at: string
           currency: string
           dietary_notes: string | null
@@ -786,6 +787,7 @@ export type Database = {
           accessibility_notes?: string | null
           amount_kobo: number
           attendee_code: string
+          confirmation_email_sent_at?: string | null
           created_at?: string
           currency?: string
           dietary_notes?: string | null
@@ -801,6 +803,7 @@ export type Database = {
           accessibility_notes?: string | null
           amount_kobo?: number
           attendee_code?: string
+          confirmation_email_sent_at?: string | null
           created_at?: string
           currency?: string
           dietary_notes?: string | null
@@ -863,6 +866,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_content: {
+        Row: {
+          content: Json
+          key: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          content: Json
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          content?: Json
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       ticket_types: {
         Row: {
