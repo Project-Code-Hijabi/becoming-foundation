@@ -17,5 +17,5 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
     },
   });
   const { data } = await sb.from("site_content").select("key, content");
-  return (data ?? []) as { key: string; content: unknown }[];
+  return (data ?? []) as { key: string; content: any }[];
 });
