@@ -22,11 +22,13 @@ export const Route = createFileRoute("/ball/admin")({
   component: Admin,
 });
 
-const TABS = ["Overview", "Attendees", "Staff", "Announcements", "Programme", "Content"] as const;
+const TABS = ["Overview", "Attendees", "Staff", "Announcements", "Programme", "Content", "Pages"] as const;
 type Tab = (typeof TABS)[number];
 const card = "rounded-sm border border-border bg-card p-4";
 const btn = "rounded-sm bg-secondary px-3 py-2 text-sm text-ivory hover:bg-velvet disabled:opacity-50";
 const field = "w-full rounded-sm border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground";
+
+import { PagesEditor } from "@/features/portal/pages-editor";
 
 function Admin() {
   const [tab, setTab] = useState<Tab>("Overview");
@@ -52,6 +54,7 @@ function Admin() {
         {tab === "Announcements" && <Announcements />}
         {tab === "Programme" && <Programme />}
         {tab === "Content" && <Content />}
+        {tab === "Pages" && <PagesEditor />}
       </main>
     </div>
   );

@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { getSiteContent } from "@/lib/content.functions";
+import { applyContent } from "@/features/ball/content";
 import { CurtainEntry } from "@/features/ball/entry";
 import { CursorTrail } from "@/features/ball/primitives";
 import {
@@ -21,10 +23,12 @@ export const Route = createFileRoute("/ball/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  loader: () => getSiteContent().catch(() => []),
   component: BallPage,
 });
 
 function BallPage() {
+  applyContent(Route.useLoaderData());
   return (
     <>
       <CurtainEntry />
