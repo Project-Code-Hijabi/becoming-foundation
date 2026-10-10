@@ -87,6 +87,7 @@ export const FIRESIDE = {
 
 export type Team = { name: string | null; problem: string | null; solution: string | null; members: string[] };
 export const HACKATHON: Team[] = Array.from({ length: 5 }, () => ({ name: null, problem: null, solution: null, members: [] }));
+export const HACKATHON_JUDGES = ["Khadijah Abiola", "Balikis Bankole"];
 
 export type Award = { title: string; recipient: string | null };
 export const AWARDS: Award[] = [
