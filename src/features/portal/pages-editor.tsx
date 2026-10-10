@@ -64,7 +64,7 @@ function ObjectNode({ value, onChange }: { value: Record<string, J>; onChange: (
 }
 
 export function PagesEditor() {
-  const [key, setKey] = useState(SECTIONS[0].key);
+  const [key, setKey] = useState(SECTIONS[0]!.key);
   const [value, setValue] = useState<J>(null);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
