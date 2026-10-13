@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { gate, signOut, useLoad, must, State, naira, fmtTime } from "@/features/portal/shared";
-import { listStaff, inviteStaff, removeStaff } from "@/lib/admin.functions";
+import { listStaff, inviteStaff, removeStaff, emailSettingsStatus } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/ball/admin")({
   ssr: false,
@@ -169,6 +169,7 @@ function Staff() {
   }
   return (
     <div className="space-y-5">
+      <EmailSettings />
       <form onSubmit={send} className={`${card} space-y-3`}>
         <h2 className="font-semibold">Invite a staff member</h2>
         <p className="text-sm text-muted-foreground">She'll receive an email to set her own password, then can use the Door scanner. You never set her password.</p>
@@ -331,5 +332,27 @@ function Rows({ rows, onToggle }: { rows: { id: string; label: string; sub: stri
           <button className="text-xs underline" onClick={() => onToggle(r.id, !r.pub)}>{r.pub ? "Unpublish" : "Publish"}</button>
         </li>))}
     </ul>
+  );
+}
+
+function EmailSettings() {
+  const status = useServerFn(emailSettingsStatus);
+  const d = useLoad(() => status());
+  const s = d.data;
+  return (
+    <section className={`${card} space-y-2`}>
+      <h2 className="font-semibold">Confirmation emails (EmailOctopus)</h2>
+      <p className="text-sm text-muted-foreground">The API key is kept in secure server settings and is never shown here.</p>
+      <State {...d} tone="light">
+        {s && (
+          <ul className="text-sm">
+            <li>API key: {s.keySet ? "Configured" : "Not configured"}</li>
+            <li>List ID: {s.listSet ? "Configured" : "Not configured"}</li>
+            <li>Connection: {s.valid ? `Working${s.listName ? ` — list "${s.listName}"` : ""}` : s.problem}</li>
+          </ul>
+        )}
+      </State>
+      <button className={btn} onClick={() => void d.reload()}>Check again</button>
+    </section>
   );
 }
