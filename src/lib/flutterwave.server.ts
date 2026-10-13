@@ -96,6 +96,7 @@ export async function verifyAndFinalize(txRef: string, opts: { clientSaysCancell
   if (!pay) return "not_found";
   if (pay.status === "successful") {
     await ensureBadge(pay.registration_id, pay.user_id);
+    await confirm(pay.registration_id);
     return "paid";
   }
 
@@ -166,7 +167,16 @@ export async function verifyAndFinalize(txRef: string, opts: { clientSaysCancell
       .eq("status", "pending");
   }
   await ensureBadge(pay.registration_id, pay.user_id);
+  await confirm(pay.registration_id);
   return "paid";
+}
+
+/** Confirmation email after verified payment; never blocks or fails the payment result. */
+async function confirm(registrationId: string) {
+  try {
+    const { sendConfirmation } = await import("@/lib/emailoctopus.server");
+    await sendConfirmation(registrationId);
+  } catch { /* logged inside; payment stays confirmed */ }
 }
 
 async function ensureBadge(registrationId: string, userId: string) {
