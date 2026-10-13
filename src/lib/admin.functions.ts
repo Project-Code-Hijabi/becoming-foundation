@@ -34,6 +34,8 @@ export const inviteStaff = createServerFn({ method: "POST" })
   .handler(async ({ data, context }): Promise<{ result: "invited" | "granted" | "error"; message: string }> => {
     await assertAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const self = (context.claims as { email?: string }).email?.toLowerCase();
+    if (self && self === data.email) return { result: "error", message: "You can't change your own role. Invite a different email address." };
     let userId: string | null = null;
     let invited = false;
     const { data: existing } = await supabaseAdmin.from("profiles").select("id").ilike("email", data.email).maybeSingle();
@@ -64,4 +66,13 @@ export const removeStaff = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.from("user_roles").delete().eq("user_id", data.userId).eq("role", "staff");
     return { ok: true };
+  });
+
+/** Admin-only: EmailOctopus configuration status (never returns the key). */
+export const emailSettingsStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context);
+    const { checkEmailOctopus } = await import("@/lib/emailoctopus.server");
+    return checkEmailOctopus();
   });
