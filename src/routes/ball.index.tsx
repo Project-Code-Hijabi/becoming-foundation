@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSiteContent } from "@/lib/content.functions";
-import { applyContent } from "@/features/ball/content";
+import { usePreviewContent } from "@/features/ball/content";
+import { PreviewBanner } from "@/features/ball/preview-banner";
 import { CurtainEntry } from "@/features/ball/entry";
 import { CursorTrail } from "@/features/ball/primitives";
 import {
@@ -28,9 +29,10 @@ export const Route = createFileRoute("/ball/")({
 });
 
 function BallPage() {
-  applyContent(Route.useLoaderData());
+  const preview = usePreviewContent(Route.useLoaderData());
   return (
     <>
+      <PreviewBanner on={preview} />
       <CurtainEntry />
       <CursorTrail />
       <Navigation />

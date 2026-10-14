@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { gate } from "@/features/portal/shared";
 import { AttendeeApp } from "@/features/portal/attendee";
+import { getSiteContent } from "@/lib/content.functions";
+import { usePreviewContent } from "@/features/ball/content";
+import { PreviewBanner } from "@/features/ball/preview-banner";
 
 export const Route = createFileRoute("/ball/app")({
   ssr: false,
@@ -15,13 +18,16 @@ export const Route = createFileRoute("/ball/app")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
+  loader: () => getSiteContent().catch(() => []),
   component: Page,
 });
 
 function Page() {
   const { user, isAdmin, isStaff } = Route.useRouteContext();
+  const preview = usePreviewContent(Route.useLoaderData());
   return (
     <>
+      <PreviewBanner on={preview} />
       {(isAdmin || isStaff) && (
         <div className="bg-ink px-5 py-2 text-center text-xs text-lavender">
           {isAdmin && <a className="mr-4 underline" href="/ball/admin">Admin</a>}
