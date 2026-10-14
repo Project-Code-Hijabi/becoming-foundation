@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { SECTIONS, defaultFor } from "@/features/ball/content";
+import { SECTIONS, PAGES, PREVIEW_STORAGE, defaultFor, type Page } from "@/features/ball/content";
 
 const field = "w-full rounded-sm border border-input bg-background px-2 py-1.5 text-sm text-foreground";
 const small = "rounded-sm border border-border px-2 py-1 text-xs text-foreground hover:bg-secondary";
@@ -66,6 +66,7 @@ function ObjectNode({ value, onChange, template }: { value: Record<string, J>; o
 }
 
 export function PagesEditor() {
+  const [page, setPage] = useState<Page>("ball");
   const [key, setKey] = useState(SECTIONS[0]!.key);
   const [value, setValue] = useState<J>(null);
   const [msg, setMsg] = useState("");
@@ -85,6 +86,15 @@ export function PagesEditor() {
   useEffect(() => { load(key); }, [key]);
   const edit = (v: J) => { setValue(v); setDirty(true); };
   const switchTo = (k: string) => { if (dirty && !confirm("You have unsaved changes. Discard them?")) return; setKey(k); };
+  const switchPage = (p: Page) => {
+    if (dirty && !confirm("You have unsaved changes. Discard them?")) return;
+    setPage(p); setKey(SECTIONS.find((s) => s.page === p)!.key);
+  };
+  const preview = () => {
+    try { localStorage.setItem(PREVIEW_STORAGE, JSON.stringify({ [key]: value })); } catch { setMsg("Couldn't open preview in this browser."); return; }
+    const path = PAGES.find((p) => p.id === SECTIONS.find((s) => s.key === key)!.page)!.path;
+    window.open(`${path}?preview=1`, "_blank", "noopener");
+  };
 
   const save = async () => {
     setBusy(true); setMsg("");
@@ -104,14 +114,18 @@ export function PagesEditor() {
 
   return (
     <div className="space-y-4 text-foreground">
-      <p className="text-sm text-muted-foreground">Edit any text on the public Ball page. Add or remove items and fields, then save. Empty a field to show "Coming soon" where the page supports it.</p>
-      <select className={field} value={key} onChange={(e) => switchTo(e.target.value)}>
-        {SECTIONS.map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
+      <p className="text-sm text-muted-foreground">Choose a page and section, edit, press Preview to see it before anyone else does, then Save & publish. Add or remove items and fields as needed. Empty a field to show "Coming soon" where the page supports it.</p>
+      <select className={field} aria-label="Page" value={page} onChange={(e) => switchPage(e.target.value as Page)}>
+        {PAGES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+      </select>
+      <select className={field} aria-label="Section" value={key} onChange={(e) => switchTo(e.target.value)}>
+        {SECTIONS.filter((s) => s.page === page).map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
       </select>
       {loadErr ? <p className="text-sm text-muted-foreground" role="alert">Couldn't load this section. <button className="underline" onClick={() => load(key)}>Try again</button></p>
         : value === null ? <p className="text-sm text-muted-foreground">Loading…</p> : <Node value={value} template={defaultFor(key)} onChange={edit} />}
       <div className="flex items-center gap-3">
         <button className="rounded-sm bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50" disabled={busy || value === null || !dirty} onClick={save}>{busy ? "Saving…" : "Save & publish"}</button>
+        <button className={small} disabled={value === null} onClick={preview}>Preview</button>
         <button className={small} onClick={reset}>Restore original</button>
         {msg && <span className="text-sm text-muted-foreground" role="status">{msg}</span>}
       </div>
