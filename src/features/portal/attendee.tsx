@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { supabase } from "@/integrations/supabase/client";
+import { APP_COPY } from "@/features/ball/copy";
 import { State, useLoad, must, initials, fmtTime, signOut } from "./shared";
 
-const EVENT = {
-  name: "Project Code-Hijabi Annual Ball 2026",
-  theme: "Becoming: Muslim Women Navigating Tech, Identity & Impact",
-  date: "Saturday, 14 November 2026",
-  venue: "Raybam",
-  address: "20 Peace Estate Road, Alimosho, Lagos",
-};
+const EVENT = { get name() { return APP_COPY.eventName; }, get theme() { return APP_COPY.theme; }, get date() { return APP_COPY.date; }, get venue() { return APP_COPY.venue; }, get address() { return APP_COPY.address; } };
 
 type Tab = "home" | "programme" | "guests" | "becoming" | "network" | "profile";
 const TABS: [Tab, string][] = [
@@ -74,14 +69,14 @@ function Home({ userId }: { userId: string }) {
         <div className="space-y-10">
           <section>
             <p className="text-sm text-lavender">Hi{first ? `, ${first}` : ""}.</p>
-            <h1 className="mt-2 font-serif text-5xl md:text-6xl">{q.data.reg?.status === "paid" ? "You're in. 💜" : "Almost there."}</h1>
+            <h1 className="mt-2 font-serif text-5xl md:text-6xl">{q.data.reg?.status === "paid" ? APP_COPY.homePaidTitle : APP_COPY.homePendingTitle}</h1>
             <p className="mt-4 font-serif text-xl text-blush">{EVENT.name}</p>
             <p className="mt-1 text-lavender">{EVENT.theme}</p>
-            <p className="mt-4 text-sm text-ivory/90">{EVENT.date}<br />{EVENT.venue}<br />{EVENT.address}</p>
+            <p className="mt-4 text-sm text-ivory/90">{EVENT.date}<br />{APP_COPY.timing && <>{APP_COPY.timing}<br /></>}{EVENT.venue}<br />{EVENT.address}</p>
           </section>
           <Pass data={q.data} />
           <section aria-labelledby="ann">
-            <h2 id="ann" className="font-serif text-3xl">Notes from the hosts</h2>
+            <h2 id="ann" className="font-serif text-3xl">{APP_COPY.announcementsTitle}</h2>
             {q.data.ann.length === 0 ? <p className="mt-3 text-sm text-lavender/80">No announcements yet. We'll share updates here.</p> : (
               <ul className="mt-4 space-y-3">
                 {q.data.ann.map((a) => (
@@ -116,7 +111,7 @@ function Pass({ data }: { data: { name: string; reg: { attendee_code: string; st
     <section aria-labelledby="pass" className="overflow-hidden rounded-sm bg-ivory text-plum shadow-[0_20px_60px_-20px] shadow-rose/40">
       <div className="bg-gradient-to-r from-plum to-velvet px-6 py-4 text-ivory">
         <p className="text-[11px] uppercase tracking-[0.3em] text-blush">Ball Pass · Pink & Purple Edition</p>
-        <h2 id="pass" className="font-serif text-3xl">Becoming</h2>
+        <h2 id="pass" className="font-serif text-3xl">{APP_COPY.becomingTitle}</h2>
       </div>
       <div className="grid gap-6 p-6 md:grid-cols-[1fr_auto]">
         <dl className="grid grid-cols-2 gap-4 text-sm">
@@ -151,7 +146,7 @@ function Programme() {
   });
   return (
     <section>
-      <h1 className="font-serif text-4xl">The Evening</h1>
+      <h1 className="font-serif text-4xl">{APP_COPY.programmeTitle}</h1>
       <State {...q} empty={q.data?.length === 0 && "The programme will appear here once it's published."}>
         <ol className="mt-6 space-y-4">
           {q.data?.map((i, n) => (
@@ -183,7 +178,7 @@ function Guests() {
       {q.data && (
         <div className="space-y-12">
           <section>
-            <h1 className="font-serif text-4xl">Voices of the evening</h1>
+            <h1 className="font-serif text-4xl">{APP_COPY.guestsTitle}</h1>
             {q.data.people.length === 0 ? <p className="mt-3 text-sm text-lavender/80">Guests will be shared here soon.</p> : (
               <ul className="mt-6 grid gap-4 md:grid-cols-2">
                 {q.data.people.map((p) => (
@@ -204,7 +199,7 @@ function Guests() {
           </section>
           <section>
             <p className="text-[11px] uppercase tracking-[0.3em] text-blush">PCH Hackathon</p>
-            <h2 className="mt-1 font-serif text-4xl">Built by her.</h2>
+            <h2 className="mt-1 font-serif text-4xl">{APP_COPY.hackathonTitle}</h2>
             <p className="mt-2 text-lavender">Muslim Women Building the Future of Careers in Africa.</p>
             {q.data.teams.length === 0 ? <p className="mt-3 text-sm text-lavender/80">Teams will be revealed soon.</p> : (
               <ul className="mt-6 grid gap-4 md:grid-cols-2">
@@ -248,7 +243,7 @@ function Becoming({ userId }: { userId: string }) {
   return (
     <div className="space-y-12">
       <section>
-        <h1 className="font-serif text-4xl">Dear Future Me</h1>
+        <h1 className="font-serif text-4xl">{APP_COPY.dearFutureMeTitle}</h1>
         <p className="mt-2 text-sm text-lavender">Only you can read these. Not even the hosts.</p>
         <form className="mt-4 space-y-3" onSubmit={async (e) => { e.preventDefault(); if (letter.trim() && await act(() => supabase.from("dear_future_me").insert({ user_id: userId, content: letter.trim() }), "Sealed. 💜")) setLetter(""); }}>
           <label htmlFor="letter" className="sr-only">Your letter</label>
@@ -257,7 +252,7 @@ function Becoming({ userId }: { userId: string }) {
         </form>
       </section>
       <section>
-        <h2 className="font-serif text-3xl">Reflections</h2>
+        <h2 className="font-serif text-3xl">{APP_COPY.reflectionsTitle}</h2>
         <form className="mt-4 space-y-3" onSubmit={async (e) => { e.preventDefault(); if (note.body.trim() && await act(() => supabase.from("becoming_entries").insert({ user_id: userId, entry_type: "reflection", title: note.title.trim() || null, body: note.body.trim(), is_public: false }), "Saved.")) setNote({ title: "", body: "" }); }}>
           <input aria-label="Title (optional)" value={note.title} maxLength={200} onChange={(e) => setNote({ ...note, title: e.target.value })} className={field} placeholder="A title (optional)" />
           <textarea aria-label="Reflection" rows={3} value={note.body} maxLength={5000} onChange={(e) => setNote({ ...note, body: e.target.value })} className={field} placeholder="What are you becoming?" />
@@ -315,7 +310,7 @@ function Network({ userId }: { userId: string }) {
       {d && (
         <div className="space-y-10">
           <section>
-            <h1 className="font-serif text-4xl">Don't just attend. Meet someone.</h1>
+            <h1 className="font-serif text-4xl">{APP_COPY.networkTitle}</h1>
             <div className={`${card} mt-4 flex flex-wrap items-center justify-between gap-3`}>
               <p className="text-sm">{d.priv?.networking_enabled ? (d.priv.profile_discoverable ? "You're visible to other guests." : "Networking is on, but you're hidden from the directory.") : "Networking is off. Others can't find or request you."}</p>
               <button className={ghost} disabled={busy} onClick={() => run(() => supabase.from("profile_privacy").update(d.priv?.networking_enabled ? { networking_enabled: false, profile_discoverable: false } : { networking_enabled: true, profile_discoverable: true }).eq("profile_id", userId), "Updated.")}>
@@ -326,7 +321,7 @@ function Network({ userId }: { userId: string }) {
           </section>
           {d.reqs.some((r) => r.recipient_id === userId && r.status === "pending") && (
             <section>
-              <h2 className="font-serif text-2xl">Waiting for you</h2>
+              <h2 className="font-serif text-2xl">{APP_COPY.requestsTitle}</h2>
               <ul className="mt-3 space-y-3">
                 {d.reqs.filter((r) => r.recipient_id === userId && r.status === "pending").map((r) => (
                   <li key={r.id} className={card}>
@@ -342,7 +337,7 @@ function Network({ userId }: { userId: string }) {
             </section>
           )}
           <section>
-            <h2 className="font-serif text-2xl">Your connections</h2>
+            <h2 className="font-serif text-2xl">{APP_COPY.connectionsTitle}</h2>
             {d.conns.length === 0 ? <p className="mt-2 text-sm text-lavender/80">No connections yet.</p> : (
               <ul className="mt-3 grid gap-3 md:grid-cols-2">
                 {d.conns.map((p) => p && (
@@ -362,7 +357,7 @@ function Network({ userId }: { userId: string }) {
             )}
           </section>
           <section>
-            <h2 className="font-serif text-2xl">Guests open to connect</h2>
+            <h2 className="font-serif text-2xl">{APP_COPY.directoryTitle}</h2>
             {d.dir.filter((p) => p.discoverable).length === 0 ? <p className="mt-2 text-sm text-lavender/80">No one is discoverable yet. Check back closer to the evening.</p> : (
               <ul className="mt-3 grid gap-3 md:grid-cols-2">
                 {d.dir.filter((p) => p.discoverable).map((p) => {
@@ -434,7 +429,7 @@ function Profile({ userId, email }: { userId: string; email: string }) {
     <State {...q}>
       <form onSubmit={save} className="space-y-8">
         <div>
-          <h1 className="font-serif text-4xl">Your Ball profile</h1>
+          <h1 className="font-serif text-4xl">{APP_COPY.profileTitle}</h1>
           <p className="mt-1 text-sm text-lavender">{email}</p>
         </div>
         <div className="grid gap-4 md:grid-cols-2">

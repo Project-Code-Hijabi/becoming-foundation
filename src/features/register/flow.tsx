@@ -1,3 +1,4 @@
+import { REGISTER_COPY } from "@/features/ball/copy";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -334,9 +335,9 @@ function Welcome({ onStart }: { onStart: () => void }) {
   return (
     <section className="flex min-h-[70dvh] flex-col justify-center">
       <p className="font-sans text-[0.65rem] uppercase tracking-[0.4em] text-blush/85">{EVENT.name} · {EVENT.edition}</p>
-      <h1 tabIndex={-1} data-step-heading className="mt-6 font-serif text-6xl leading-[0.95] text-ivory outline-none sm:text-7xl">You're coming. <span aria-hidden>💜</span></h1>
-      <p className="mt-6 font-serif text-2xl italic text-blush">Let's make your seat official.</p>
-      <p className="mt-2 font-sans text-sm text-lavender">A few little details, then you're on your way.</p>
+      <h1 tabIndex={-1} data-step-heading className="mt-6 font-serif text-6xl leading-[0.95] text-ivory outline-none sm:text-7xl">{REGISTER_COPY.welcomeTitle}</h1>
+      <p className="mt-6 font-serif text-2xl italic text-blush">{REGISTER_COPY.welcomeLine}</p>
+      <p className="mt-2 font-sans text-sm text-lavender">{REGISTER_COPY.welcomeNote}</p>
       <div className="mt-10 border-l border-rose/50 pl-5 font-sans text-sm leading-7 text-lavender">
         <p className="text-ivory">{EVENT.dayLabel}</p>
         <p>{EVENT.venue}</p>
@@ -911,8 +912,8 @@ function YoureIn({ name, reg }: { name: string; reg: Awaited<ReturnType<typeof g
   return (
     <section className="flex min-h-[60dvh] flex-col justify-center">
       <p className="font-sans text-[0.65rem] uppercase tracking-[0.4em] text-blush/85">{EVENT.colourEdition}</p>
-      <h1 tabIndex={-1} data-step-heading className="mt-6 font-serif text-6xl leading-none text-ivory outline-none sm:text-7xl">You're in. <span aria-hidden>💜</span></h1>
-      <p className="mt-5 font-serif text-2xl italic text-blush">Welcome to the PCH Annual Ball 2026{first ? `, ${first}` : ""}.</p>
+      <h1 tabIndex={-1} data-step-heading className="mt-6 font-serif text-6xl leading-none text-ivory outline-none sm:text-7xl">{REGISTER_COPY.doneTitle}</h1>
+      <p className="mt-5 font-serif text-2xl italic text-blush">{REGISTER_COPY.doneLine}{first ? `, ${first}` : ""}.</p>
       {reg && (
         <div className="relative mt-10 overflow-hidden border border-blush/35 bg-gradient-to-br from-velvet/70 via-plum to-ink p-6 sm:p-8">
           <div aria-hidden className="absolute inset-0 circuit-grid opacity-20" />
