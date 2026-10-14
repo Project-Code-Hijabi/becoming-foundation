@@ -72,8 +72,9 @@ export const PANEL = {
     },
     { name: "Taofeeqah Balogun", role: "Panelist", title: "Cybersecurity Manager, CyberSOC Africa", bio: null },
     { name: "Khadijah Abiola", role: "Panelist & Hackathon Judge", bio: null },
+    { name: "Masturah Babawale", role: "Moderator", title: "Founder, Project Code-Hijabi", bio: null },
   ] as Person[],
-  pending: "Joining soon",
+  pending: "" as string,
 };
 
 export const FIRESIDE = {
@@ -81,8 +82,9 @@ export const FIRESIDE = {
   line: "An intimate conversation beyond polished career stories — pivots, doubts, lessons, unexpected turns and quiet moments.",
   people: [
     { name: "Aisha Mudathir", role: "Fireside Guest", bio: null },
+    { name: "Zainab Adeoye", role: "Moderator", bio: null },
   ] as Person[],
-  pending: "Joining soon",
+  pending: "" as string,
 };
 
 export type Team = { name: string | null; problem: string | null; solution: string | null; members: string[] };
@@ -91,13 +93,17 @@ export const HACKATHON_JUDGES = ["Khadijah Abiola", "Balikis Bankole"];
 
 export type Award = { title: string; recipient: string | null };
 export const AWARDS: Award[] = [
-  { title: "Mentee Award", recipient: null },
-  { title: "Male Mentor Award", recipient: null },
-  { title: "Female Mentor Award", recipient: null },
-  { title: "Muslim Woman in Tech", recipient: null },
-  { title: "Teenage Muslim Woman in Tech", recipient: null },
-  { title: "Executive Award", recipient: null },
-  { title: "Hackathon Winner", recipient: null },
+  { title: "Hackathon First Place", recipient: null },
+  { title: "Hackathon Second Place", recipient: null },
+  { title: "Hackathon Third Place", recipient: null },
+  { title: "Muslim Woman in Tech of the Year", recipient: null },
+  { title: "Teenage Muslim Woman in Tech of the Year", recipient: null },
+  { title: "Best PCH Mentee", recipient: null },
+  { title: "Best PCH Community Member", recipient: null },
+  { title: "Best PCH Mentor", recipient: null },
+  { title: "Executive of the Year", recipient: null },
+  { title: "Speaker & Panelist Appreciation", recipient: null },
+  { title: "Special Impact Award", recipient: null },
 ];
 
 export const TICKETS = [

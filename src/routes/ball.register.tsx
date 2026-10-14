@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { RegisterFlow } from "@/features/register/flow";
+import { getSiteContent } from "@/lib/content.functions";
+import { usePreviewContent } from "@/features/ball/content";
+import { PreviewBanner } from "@/features/ball/preview-banner";
 
 const title = "Register — Project Code-Hijabi Annual Ball 2026";
 const description = "You're coming. Make your seat at the Pink & Purple Edition official — 14 November 2026, Raybam, Lagos.";
@@ -15,5 +18,11 @@ export const Route = createFileRoute("/ball/register")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: RegisterFlow,
+  loader: () => getSiteContent().catch(() => []),
+  component: Page,
 });
+
+function Page() {
+  const preview = usePreviewContent(Route.useLoaderData());
+  return <><PreviewBanner on={preview} /><RegisterFlow /></>;
+}
