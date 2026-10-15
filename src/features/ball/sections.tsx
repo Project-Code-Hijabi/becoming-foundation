@@ -220,7 +220,7 @@ function ProgrammeChapter({ c }: { c: Chapter }) {
       <div className={cn("grid transition-all duration-500", open ? "grid-rows-[1fr] pb-6" : "grid-rows-[0fr]")}>
         <div className="overflow-hidden pl-12">
           <p className="font-serif text-lg italic text-velvet">{c.line}</p>
-          <p className="mt-2 font-sans text-[0.65rem] uppercase tracking-[0.3em] text-velvet/60">{c.time ?? "To be announced"}</p>
+          {c.time && <p className="mt-2 font-sans text-[0.65rem] uppercase tracking-[0.3em] text-velvet/60">{c.time}</p>}
         </div>
       </div>
     </li>
@@ -234,7 +234,7 @@ export function Programme() {
         <div className="absolute inset-3 border border-lavender/40 pointer-events-none" aria-hidden />
         <Eyebrow className="text-center text-velvet/70">The Programme</Eyebrow>
         <Reveal ink as="h2" className="mt-4 text-center font-serif text-6xl font-light md:text-7xl">The Evening</Reveal>
-        <p className="mx-auto mt-4 max-w-md text-center font-serif text-lg italic text-velvet">A day of conversations, stories, ideas, connection and celebration.</p>
+        <p className="mx-auto mt-4 max-w-md text-center font-serif text-lg italic text-velvet">Guest arrival from 9:00 AM · Programme approximately 9:30 AM – 5:00 PM</p>
         <ol className="mt-12">{PROGRAMME.map((c) => <ProgrammeChapter key={c.no} c={c} />)}</ol>
         <WaxSeal className="mx-auto mt-10 w-16" />
       </div>
@@ -262,7 +262,7 @@ function SpeakerCard({ p, large }: { p: Person; large?: boolean }) {
         {p.aka && <p className="font-serif italic text-blush">widely known as {p.aka}</p>}
         {p.title && <p className="mt-2 max-w-md font-sans text-xs uppercase leading-relaxed tracking-[0.18em] text-lavender">{p.title}</p>}
         {p.topic && <p className="mt-4 max-w-md font-serif text-lg italic text-rose/90 transition-all duration-500 group-hover:text-xl">“{p.topic}”</p>}
-        <p className="mt-4 max-w-md text-sm leading-relaxed text-ivory/75">{p.bio ?? (p.topic ? "Biography coming soon." : "Details coming soon.")}</p>
+        {p.bio && <p className="mt-4 max-w-md text-sm leading-relaxed text-ivory/75">{p.bio}</p>}
         {p.bioMore && (
           <>
             {more && <p className="mt-2 max-w-md text-sm leading-relaxed text-ivory/75">{p.bioMore}</p>}
@@ -354,12 +354,12 @@ function HackathonCard({ t, i }: { t: Team; i: number }) {
       <div className="flex items-center justify-between font-mono text-[0.65rem] text-lavender/70">
         <span>team_0{i + 1}</span><span>● pitching</span>
       </div>
-      <h3 className="mt-8 font-serif text-3xl text-ivory">{t.name ?? "To be revealed"}</h3>
+      <h3 className="mt-8 font-serif text-3xl text-ivory">{t.name}</h3>
       <dl className="mt-6 space-y-3 text-sm">
-        {rows.map(([k, v]) => (
+        {rows.filter(([, v]) => v).map(([k, v]) => (
           <div key={k} className="flex gap-4 border-t border-lavender/10 pt-3">
             <dt className="w-20 font-mono text-[0.65rem] uppercase text-lavender/60">{k}</dt>
-            <dd className="text-ivory/60">{v ?? "Coming soon"}</dd>
+            <dd className="text-ivory/60">{v}</dd>
           </div>
         ))}
       </dl>
@@ -372,10 +372,10 @@ export function Hackathon() {
     <EditorialSection id="hackathon" label="Built By Her" className="overflow-hidden bg-ink circuit-grid">
       <div aria-hidden className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 80% 20%, oklch(0.62 0.2 342 / 24%), transparent 55%)" }} />
       <div className="relative mx-auto max-w-6xl">
-        <p className="font-mono text-xs text-lavender/70">// project code-hijabi hackathon 2026 — top five</p>
+        <p className="font-mono text-xs text-lavender/70">// project code-hijabi hackathon 2026 — finalists</p>
         <Reveal ink as="h2" className="mt-6 font-serif text-6xl font-light text-ivory md:text-8xl">Built by her.</Reveal>
-        <p className="mt-6 max-w-xl font-serif text-xl italic text-ivory/70">Five teams. Real problems. Ideas built into something you can see.</p>
-        <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{HACKATHON.map((t, i) => <HackathonCard key={i} t={t} i={i} />)}</div>
+        <p className="mt-6 max-w-xl font-serif text-xl italic text-ivory/70">The Project Code-Hijabi Hackathon finalists pitch live, across two pitch blocks. Real problems. Ideas built into something you can see.</p>
+        {HACKATHON.some((t) => t.name) && <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{HACKATHON.filter((t) => t.name).map((t, i) => <HackathonCard key={i} t={t} i={i} />)}</div>}
         <div className="mt-12">
           <p className="text-xs uppercase tracking-[0.3em] text-lavender/70">Judges</p>
           <ul className="mt-3 flex flex-wrap gap-x-8 gap-y-2 font-serif text-2xl text-ivory">
@@ -441,7 +441,6 @@ export function TheRoom() {
             <p className="mt-3 text-sm text-ivory/65">Overlooking the stage — for the PCH team, speakers, special invited guests and VIPs.</p>
           </figure>
         </div>
-        <p className="mt-6 font-mono text-[0.65rem] text-ivory/40">venue photography coming soon</p>
       </div>
     </EditorialSection>
   );
@@ -455,7 +454,7 @@ function AwardCard({ a, i }: { a: Award; i: number }) {
         <g fill="none" stroke="currentColor" strokeWidth="0.8"><rect x="10" y="10" width="20" height="20" /><rect x="10" y="10" width="20" height="20" transform="rotate(45 20 20)" /></g>
       </svg>
       <h3 className="mt-6 font-serif text-2xl text-ivory">{a.title}</h3>
-      <p className="mt-3 font-sans text-[0.65rem] uppercase tracking-[0.3em] text-ivory/50">{a.recipient ?? "To be announced"}</p>
+      {a.recipient && <p className="mt-3 font-sans text-[0.65rem] uppercase tracking-[0.3em] text-ivory/50">{a.recipient}</p>}
     </Reveal>
   );
 }
