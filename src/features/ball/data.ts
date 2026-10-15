@@ -30,7 +30,7 @@ export const PROGRAMME: Chapter[] = [
   { no: "07", title: "Interactive / Table Experience", line: "Your table, your missions, your conversations.", time: null },
   { no: "08", title: "Panel", line: "Becoming: The Realities of Navigating Tech.", time: null },
   { no: "09", title: "Hackathon Pitch Block 1", line: "The first finalists pitch live.", time: null },
-  { no: "10", title: "Networking & Snacks", line: "Meet someone you didn"t know when you arrived.", time: null },
+  { no: "10", title: "Networking & Snacks", line: "Meet someone you didn't know when you arrived.", time: null },
   { no: "11", title: "Keynote 2", line: "Becoming: Finding Your Place, Building Your Career & Creating Opportunities in Tech — Dr. Falilat Jimoh.", time: null },
   { no: "12", title: "Hackathon Pitch Block 2", line: "The remaining finalists pitch live.", time: null },
   { no: "13", title: "PCH Stories", line: "Impact storytelling from the Project Code-Hijabi community.", time: null },
@@ -39,7 +39,7 @@ export const PROGRAMME: Chapter[] = [
   { no: "16", title: "Dear Future Me", line: "A letter to the woman you are becoming.", time: null },
   { no: "17", title: "Closing", line: "We made it here, together.", time: null },
   { no: "18", title: "Food, Merch & Take-Home", line: "Something to carry home.", time: null },
-  { no: "19", title: "Departure", line: "Leave knowing a little more about who you"re becoming.", time: null },
+  { no: "19", title: "Departure", line: "Leave knowing a little more about who you're becoming.", time: null },
 ];
 
 export type Person = { name: string; aka?: string; role?: string | null; topic?: string; title?: string | null; bio: string | null; bioMore?: string | null; quote?: string };
