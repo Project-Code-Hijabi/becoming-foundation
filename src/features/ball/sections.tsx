@@ -348,12 +348,13 @@ export function Conversations() {
 
 /* ---------------- Hackathon ---------------- */
 function HackathonCard({ t, i }: { t: Team; i: number }) {
-  const rows: [string, string | null][] = [["Problem", t.problem], ["Solution", t.solution], ["Team", t.members.length ? t.members.join(", ") : null]];
+  const rows: [string, string | null][] = [["Problem", t.problem], ["Solution", t.solution], ["Team", t.members?.filter(Boolean).length ? t.members.filter(Boolean).join(", ") : null]];
   return (
     <Reveal as="article" delay={i * 100} className="group relative border border-lavender/15 bg-plum/40 p-6 transition-colors duration-500 hover:border-lavender/50">
       <div className="flex items-center justify-between font-mono text-[0.65rem] text-lavender/70">
         <span>team_0{i + 1}</span><span>● pitching</span>
       </div>
+      {t.logo && /^https:\/\//.test(t.logo) && <img src={t.logo} alt={`${t.name ?? "Team"} logo`} loading="lazy" className="mt-6 h-14 w-auto max-w-[10rem] object-contain" />}
       <h3 className="mt-8 font-serif text-3xl text-ivory">{t.name}</h3>
       <dl className="mt-6 space-y-3 text-sm">
         {rows.filter(([, v]) => v).map(([k, v]) => (

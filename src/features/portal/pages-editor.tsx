@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { SECTIONS, PAGES, PREVIEW_STORAGE, defaultFor, type Page } from "@/features/ball/content";
+import { SECTIONS, PAGES, PREVIEW_STORAGE, defaultFor, templateFor, isImageField, ASSET_PREFIX, type Page } from "@/features/ball/content";
 
 const field = "w-full rounded-sm border border-input bg-background px-2 py-1.5 text-sm text-foreground";
 const small = "rounded-sm border border-border px-2 py-1 text-xs text-foreground hover:bg-secondary";
@@ -13,8 +13,51 @@ function blankLike(v: J): J {
   return typeof v === "number" ? 0 : "";
 }
 
-function Node({ value, onChange, template }: { value: J; onChange: (v: J) => void; template?: J }) {
+const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp", "image/svg+xml"];
+
+function ImageField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [url, setUrl] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const path = value?.startsWith(ASSET_PREFIX) ? value.slice(ASSET_PREFIX.length) : null;
+  useEffect(() => {
+    setUrl(null);
+    if (!path) return;
+    supabase.storage.from("event-assets").createSignedUrl(path, 600).then(({ data }) => setUrl(data?.signedUrl ?? null));
+  }, [path]);
+  const upload = async (f: File | undefined) => {
+    setErr("");
+    if (!f) return;
+    if (!IMAGE_TYPES.includes(f.type)) { setErr("Use a PNG, JPG, WebP or SVG image."); return; }
+    if (f.size > 5 * 1024 * 1024) { setErr("Image must be under 5 MB."); return; }
+    setBusy(true);
+    const ext = f.name.split(".").pop()?.toLowerCase().replace(/[^a-z0-9]/g, "") || "img";
+    const newPath = `site/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("event-assets").upload(newPath, f, { contentType: f.type, upsert: false });
+    if (!error) {
+      const { data: u } = await supabase.auth.getUser();
+      const pub = await supabase.from("event_asset_publications").insert({ object_path: newPath, title: f.name.slice(0, 120), is_published: true, created_by: u.user?.id ?? null });
+      if (pub.error) { await supabase.storage.from("event-assets").remove([newPath]); setErr("Couldn't publish the image. Try again."); }
+      else onChange(ASSET_PREFIX + newPath);
+    } else setErr("Couldn't upload. Try again.");
+    setBusy(false);
+  };
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      {url ? <img src={url} alt="Selected" className="h-16 w-auto max-w-[8rem] rounded-sm border border-border object-contain" /> : <span className="text-xs text-muted-foreground">{path ? "Loading…" : "No image"}</span>}
+      <label className={small + " cursor-pointer"}>
+        {busy ? "Uploading…" : path ? "Replace image" : "Upload image"}
+        <input type="file" accept={IMAGE_TYPES.join(",")} className="sr-only" disabled={busy} onChange={(e) => { upload(e.target.files?.[0]); e.target.value = ""; }} />
+      </label>
+      {path && <button className={small} onClick={() => { if (confirm("Remove this image?")) onChange(""); }}>Remove image</button>}
+      {err && <span className="text-xs text-muted-foreground" role="alert">{err}</span>}
+    </div>
+  );
+}
+
+function Node({ value, onChange, template, name }: { value: J; onChange: (v: J) => void; template?: J; name?: string }) {
   if (value === undefined) value = null;
+  if (isImageField(name) && (typeof value === "string" || value === null)) return <ImageField value={value ?? ""} onChange={onChange} />;
   if (Array.isArray(value)) {
     const proto = value.length ? value[0] : Array.isArray(template) && template.length ? template[0] : "";
     return (
@@ -54,7 +97,7 @@ function ObjectNode({ value, onChange, template }: { value: Record<string, J>; o
             <label className="text-xs font-semibold text-foreground">{k}</label>
             <button className="text-xs text-muted-foreground underline" onClick={() => { if (!confirm(`Remove the field "${k}"?`)) return; const n = { ...value }; delete n[k]; onChange(n); }}>Remove field</button>
           </div>
-          <Node value={v} template={template && typeof template === "object" ? template[k] : undefined} onChange={(nv) => onChange({ ...value, [k]: nv })} />
+          <Node name={k} value={v} template={template && typeof template === "object" ? template[k] : undefined} onChange={(nv) => onChange({ ...value, [k]: nv })} />
         </div>
       ))}
       <div className="flex gap-2">
@@ -114,7 +157,7 @@ export function PagesEditor() {
 
   return (
     <div className="space-y-4 text-foreground">
-      <p className="text-sm text-muted-foreground">Choose a page and section, edit, press Preview to see it before anyone else does, then Save & publish. Add or remove items and fields as needed. Empty a field to show "Coming soon" where the page supports it.</p>
+      <p className="text-sm text-muted-foreground">Fields named "logo" or "image" get an Upload image button. Choose a page and section, edit, press Preview to see it before anyone else does, then Save & publish. Add or remove items and fields as needed. Empty a field to show "Coming soon" where the page supports it.</p>
       <select className={field} aria-label="Page" value={page} onChange={(e) => switchPage(e.target.value as Page)}>
         {PAGES.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
       </select>
@@ -122,7 +165,7 @@ export function PagesEditor() {
         {SECTIONS.filter((s) => s.page === page).map((s) => <option key={s.key} value={s.key}>{s.label}</option>)}
       </select>
       {loadErr ? <p className="text-sm text-muted-foreground" role="alert">Couldn't load this section. <button className="underline" onClick={() => load(key)}>Try again</button></p>
-        : value === null ? <p className="text-sm text-muted-foreground">Loading…</p> : <Node value={value} template={defaultFor(key)} onChange={edit} />}
+        : value === null ? <p className="text-sm text-muted-foreground">Loading…</p> : <Node value={value} template={templateFor(key)} onChange={edit} />}
       <div className="flex items-center gap-3">
         <button className="rounded-sm bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50" disabled={busy || value === null || !dirty} onClick={save}>{busy ? "Saving…" : "Save & publish"}</button>
         <button className={small} disabled={value === null} onClick={preview}>Preview</button>
