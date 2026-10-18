@@ -96,7 +96,7 @@ export const FIRESIDE = {
   pending: "" as string,
 };
 
-export type Team = { name: string | null; problem: string | null; solution: string | null; members: string[] };
+export type Team = { name: string | null; problem: string | null; solution: string | null; members: string[]; logo?: string | null };
 export const HACKATHON: Team[] = [];
 export const HACKATHON_JUDGES = ["Khadijah Abiola", "Balikis Bankole"];
 

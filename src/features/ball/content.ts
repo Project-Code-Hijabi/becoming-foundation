@@ -27,6 +27,14 @@ export const SECTIONS: { key: string; label: string; page: Page; get: () => Json
 
 const DEFAULTS: Record<string, Json> = Object.fromEntries(SECTIONS.map((s) => [s.key, structuredClone(s.get())]));
 export const defaultFor = (key: string) => structuredClone(DEFAULTS[key]);
+/** Shapes for new items in lists whose default is empty, so "+ Add item" gives every field. */
+const ITEM_TEMPLATES: Record<string, Json> = {
+  HACKATHON: [{ name: "", problem: "", solution: "", members: [""], logo: "" }],
+};
+export const templateFor = (key: string) => structuredClone(ITEM_TEMPLATES[key] ?? DEFAULTS[key]);
+/** Field names the editor treats as an uploadable image. Values are stored as "asset:<path>". */
+export const isImageField = (name?: string) => !!name && /^(image|logo)$|(Image|Logo)$/.test(name);
+export const ASSET_PREFIX = "asset:";
 
 function replaceInPlace(target: any, value: any) {
   if (Array.isArray(target) && Array.isArray(value)) target.splice(0, target.length, ...value);
