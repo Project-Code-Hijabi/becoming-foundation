@@ -22,7 +22,7 @@ export const Route = createFileRoute("/ball/admin")({
   component: Admin,
 });
 
-const TABS = ["Overview", "Attendees", "Staff", "Announcements", "Programme", "Content", "Pages", "Passes"] as const;
+const TABS = ["Overview", "Attendees", "Staff", "Announcements", "Programme", "Content", "Pages", "Passes", "Speakers"] as const;
 type Tab = (typeof TABS)[number];
 const card = "rounded-sm border border-border bg-card p-4";
 const btn = "rounded-sm bg-secondary px-3 py-2 text-sm text-ivory hover:bg-velvet disabled:opacity-50";
@@ -30,6 +30,7 @@ const field = "w-full rounded-sm border border-input bg-background px-3 py-2 tex
 
 import { PagesEditor } from "@/features/portal/pages-editor";
 import { Lanyards } from "@/features/portal/lanyards";
+import { AdminSpeakers } from "@/features/portal/speakers";
 
 function Admin() {
   const [tab, setTab] = useState<Tab>("Overview");
@@ -57,6 +58,7 @@ function Admin() {
         {tab === "Content" && <Content />}
         {tab === "Pages" && <PagesEditor />}
         {tab === "Passes" && <Lanyards />}
+        {tab === "Speakers" && <AdminSpeakers />}
       </main>
     </div>
   );

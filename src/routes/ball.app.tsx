@@ -23,7 +23,7 @@ export const Route = createFileRoute("/ball/app")({
 });
 
 function Page() {
-  const { user, isAdmin, isStaff } = Route.useRouteContext();
+  const { user, isAdmin, isStaff, roles } = Route.useRouteContext();
   const preview = usePreviewContent(Route.useLoaderData());
   return (
     <>
@@ -34,7 +34,7 @@ function Page() {
           {isStaff && <a className="underline" href="/ball/staff">Door / staff</a>}
         </div>
       )}
-      <AttendeeApp userId={user.id} email={user.email} />
+      <AttendeeApp userId={user.id} email={user.email} isSpeaker={roles.includes("speaker")} />
     </>
   );
 }
