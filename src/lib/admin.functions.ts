@@ -76,3 +76,63 @@ export const emailSettingsStatus = createServerFn({ method: "POST" })
     const { checkEmailOctopus } = await import("@/lib/emailoctopus.server");
     return checkEmailOctopus();
   });
+
+export type SpeakerRow = { userId: string; email: string; name: string | null; code: string | null };
+
+export const listSpeakers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<SpeakerRow[]> => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: roles } = await supabaseAdmin.from("user_roles").select("user_id").eq("role", "speaker");
+    const ids = (roles ?? []).map((r) => r.user_id);
+    if (!ids.length) return [];
+    const [{ data: profs }, { data: regs }] = await Promise.all([
+      supabaseAdmin.from("profiles").select("id, email, full_name").in("id", ids),
+      supabaseAdmin.from("registrations").select("user_id, attendee_code").eq("status", "paid").in("user_id", ids),
+    ]);
+    return ids.map((id) => {
+      const p = profs?.find((x) => x.id === id);
+      return { userId: id, email: p?.email ?? "", name: p?.full_name ?? null, code: regs?.find((r) => r.user_id === id)?.attendee_code ?? null };
+    });
+  });
+
+/** Adds the speaker role and a complimentary (₦0) confirmed pass with a server-issued QR. Speakers never pay. */
+export const inviteSpeaker = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ email: z.string().trim().toLowerCase().email().max(255), origin: z.string().url().max(200) }).parse(d))
+  .handler(async ({ data, context }): Promise<{ result: "invited" | "granted" | "error"; message: string }> => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    let userId: string | null = null;
+    let invited = false;
+    const { data: existing } = await supabaseAdmin.from("profiles").select("id").ilike("email", data.email).maybeSingle();
+    if (existing) userId = existing.id;
+    else {
+      const { data: inv, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, { redirectTo: `${data.origin}/ball/app/login` });
+      if (error || !inv.user) { console.error("speaker invite failed", error?.message); return { result: "error", message: "We couldn't send that invite. Check the email and try again." }; }
+      userId = inv.user.id; invited = true;
+    }
+    const { error: rErr } = await supabaseAdmin.from("user_roles").upsert({ user_id: userId, role: "speaker", granted_by: context.userId }, { onConflict: "user_id,role", ignoreDuplicates: true });
+    if (rErr) { console.error("speaker role failed", rErr.message); return { result: "error", message: "The speaker role couldn't be added. Try again." }; }
+    // Complimentary pass, only if she has no confirmed registration already.
+    const { data: paid } = await supabaseAdmin.from("registrations").select("id").eq("user_id", userId).eq("status", "paid").maybeSingle();
+    let regId = paid?.id ?? null;
+    if (!regId) {
+      const { data: t } = await supabaseAdmin.from("ticket_types").select("id, currency").eq("is_active", true).order("price_kobo").limit(1).maybeSingle();
+      if (!t) return { result: "error", message: "No ticket type is set up to attach the pass to." };
+      const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      const code = "PCHB26-" + Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => alphabet[b % alphabet.length]).join("");
+      const { data: pending } = await supabaseAdmin.from("registrations").select("id").eq("user_id", userId).eq("status", "pending").maybeSingle();
+      const row = { status: "paid" as const, amount_kobo: 0, paid_at: new Date().toISOString(), payment_reference: "SPEAKER-COMP" };
+      const res = pending
+        ? await supabaseAdmin.from("registrations").update(row).eq("id", pending.id).select("id").single()
+        : await supabaseAdmin.from("registrations").insert({ ...row, user_id: userId, ticket_type_id: t.id, attendee_code: code, currency: t.currency }).select("id").single();
+      if (res.error) { console.error("speaker pass failed", res.error.message); return { result: "error", message: "The speaker role was added, but her pass couldn't be created. Try again." }; }
+      regId = res.data.id;
+    }
+    await supabaseAdmin.from("attendee_badges").upsert({ registration_id: regId, user_id: userId }, { onConflict: "registration_id", ignoreDuplicates: true });
+    return invited
+      ? { result: "invited", message: `Invite sent to ${data.email}. She'll set her own password, then find her free Ball Pass and Speaker page in the app.` }
+      : { result: "granted", message: `${data.email} is now a speaker with a free Ball Pass. She signs in with her existing password.` };
+  });
