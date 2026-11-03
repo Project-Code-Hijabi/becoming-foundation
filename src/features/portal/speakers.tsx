@@ -90,7 +90,7 @@ export function SpeakerStudio({ userId }: { userId: string }) {
     let path: string | null = null;
     if (file) {
       path = `${userId}/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]+/g, "_").slice(-80)}`;
-      const up = await supabase.storage.from(BUCKET).upload(path, file, { contentType: file.type || undefined });
+      const up = await supabase.storage.from(BUCKET).upload(path, file, file.type ? { contentType: file.type } : {});
       if (up.error) { setBusy(false); setMsg("The file couldn't be uploaded (max 50 MB). Try again."); return; }
     }
     const { error } = await supabase.from("speaker_materials").insert({ speaker_id: userId, title: title.trim(), note: note.trim() || null, url: url.trim() || null, file_path: path, file_name: file?.name ?? null });
