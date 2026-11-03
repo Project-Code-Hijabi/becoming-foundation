@@ -3,10 +3,21 @@ import QRCode from "qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { APP_COPY } from "@/features/ball/copy";
 import { State, useLoad, must, initials, fmtTime, signOut } from "./shared";
+import { SpeakerResources, SpeakerStudio } from "./speakers";
+
+/** Which stage of the event we're in, by Lagos calendar date. */
+export function eventPhase(now = new Date()): "before" | "today" | "after" {
+  const d = now.toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
+  return d < "2026-11-14" ? "before" : d === "2026-11-14" ? "today" : "after";
+}
+export function daysToGo(now = new Date()) {
+  const d = now.toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
+  return Math.round((Date.UTC(2026, 10, 14) - Date.parse(d + "T00:00:00Z")) / 86400000);
+}
 
 const EVENT = { get name() { return APP_COPY.eventName; }, get theme() { return APP_COPY.theme; }, get date() { return APP_COPY.date; }, get venue() { return APP_COPY.venue; }, get address() { return APP_COPY.address; } };
 
-type Tab = "home" | "programme" | "guests" | "becoming" | "network" | "profile";
+type Tab = "home" | "programme" | "guests" | "becoming" | "network" | "profile" | "speaker";
 const TABS: [Tab, string][] = [
   ["home", "Pass"], ["programme", "Evening"], ["guests", "Guests"],
   ["becoming", "Becoming"], ["network", "Connect"], ["profile", "Profile"],
@@ -17,8 +28,9 @@ const field = "w-full rounded-sm border border-lavender/30 bg-ink/40 px-3 py-2 t
 const btn = "inline-flex items-center justify-center rounded-sm bg-rose px-4 py-2 text-sm font-medium tracking-wide text-ink transition hover:bg-blush focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ivory disabled:opacity-50";
 const ghost = "inline-flex items-center justify-center rounded-sm border border-lavender/40 px-4 py-2 text-sm text-lavender transition hover:border-blush hover:text-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush disabled:opacity-50";
 
-export function AttendeeApp({ userId, email }: { userId: string; email: string }) {
+export function AttendeeApp({ userId, email, isSpeaker = false }: { userId: string; email: string; isSpeaker?: boolean }) {
   const [tab, setTab] = useState<Tab>("home");
+  const tabs: [Tab, string][] = isSpeaker ? [...TABS, ["speaker", "Speaker"]] : TABS;
   return (
     <div className="velvet-bg grain min-h-screen pb-24 text-ivory md:pb-10">
       <header className="mx-auto flex max-w-4xl items-center justify-between px-5 pt-6">
@@ -26,8 +38,8 @@ export function AttendeeApp({ userId, email }: { userId: string; email: string }
         <button onClick={signOut} className="text-xs text-lavender underline underline-offset-4 hover:text-ivory">Sign out</button>
       </header>
       <nav aria-label="Ball sections" className="fixed inset-x-0 bottom-0 z-20 border-t border-lavender/20 bg-ink/95 md:static md:mx-auto md:mt-6 md:max-w-4xl md:border-0 md:bg-transparent md:px-5">
-        <ul className="grid grid-cols-6 md:flex md:gap-6">
-          {TABS.map(([k, l]) => (
+        <ul className={`grid ${isSpeaker ? "grid-cols-7" : "grid-cols-6"} md:flex md:gap-6`}>
+          {tabs.map(([k, l]) => (
             <li key={k}>
               <button onClick={() => setTab(k)} aria-current={tab === k ? "page" : undefined}
                 className={`w-full py-3 text-[11px] uppercase tracking-[0.15em] md:text-xs ${tab === k ? "text-blush md:border-b md:border-blush" : "text-lavender/80 hover:text-ivory"}`}>{l}</button>
@@ -36,18 +48,20 @@ export function AttendeeApp({ userId, email }: { userId: string; email: string }
         </ul>
       </nav>
       <main className="mx-auto max-w-4xl px-5 pt-6">
-        {tab === "home" && <Home userId={userId} />}
+        {tab === "home" && <Home userId={userId} go={setTab} isSpeaker={isSpeaker} />}
         {tab === "programme" && <Programme />}
-        {tab === "guests" && <Guests />}
+        {tab === "guests" && <><Guests /><div className="mt-12"><SpeakerResources /></div></>}
         {tab === "becoming" && <Becoming userId={userId} />}
         {tab === "network" && <Network userId={userId} />}
         {tab === "profile" && <Profile userId={userId} email={email} />}
+        {tab === "speaker" && isSpeaker && <SpeakerStudio userId={userId} />}
       </main>
     </div>
   );
 }
 
-function Home({ userId }: { userId: string }) {
+function Home({ userId, go, isSpeaker }: { userId: string; go: (t: Tab) => void; isSpeaker: boolean }) {
+  const phase = eventPhase();
   const q = useLoad(async () => {
     const [profile, regs, badges, tickets, ann] = await Promise.all([
       supabase.from("profiles").select("full_name").eq("id", userId).maybeSingle(),
@@ -63,18 +77,47 @@ function Home({ userId }: { userId: string }) {
     return { name: must(profile)?.full_name ?? "", reg, badge, ticket, ann: must(ann) };
   }, [userId]);
   const first = q.data?.name.split(" ")[0];
+  // Live announcements: refresh the moment admins publish or edit one.
+  useEffect(() => {
+    const ch = supabase.channel(`ann-${Math.random().toString(36).slice(2)}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "announcements" }, () => { void q.reload(); })
+      .subscribe();
+    return () => { void supabase.removeChannel(ch); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  const paid = q.data?.reg?.status === "paid";
+  const steps: [Tab, string, string][] = phase === "today"
+    ? [["programme", "Follow today's programme", "See what's happening in the room."], ["network", "Meet someone", "Scan or find guests who opted in."], ["guests", "Speaker slides", "Download what speakers share."]]
+    : phase === "before"
+    ? [["profile", "Finish your profile", "Add your photo and interests so guests can find you."], ["network", "Choose who can reach you", "Turn networking on if you'd like to connect."], ["becoming", "Write to your future self", "A private letter for after the Ball."], ...(isSpeaker ? [["speaker", "Share your slides", "Upload materials for guests."] as [Tab, string, string]] : [])]
+    : [["becoming", "Leave a trace", "Write down what you're taking away."], ["guests", "Speaker slides", "Download what speakers shared."], ["network", "Your connections", "Keep in touch with who you met."]];
   return (
     <State {...q} reload={q.reload}>
       {q.data && (
         <div className="space-y-10">
           <section>
             <p className="text-sm text-lavender">Hi{first ? `, ${first}` : ""}.</p>
+            {paid && phase === "today" && <p role="status" className="mt-3 inline-block rounded-sm bg-rose px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-ink">It's Ball day · have your pass ready at the door</p>}
+            {paid && phase === "before" && <p className="mt-3 text-xs uppercase tracking-[0.25em] text-blush">{daysToGo()} day{daysToGo() === 1 ? "" : "s"} to go</p>}
+            {phase === "after" && <p className="mt-3 text-xs uppercase tracking-[0.25em] text-blush">Thank you for becoming with us</p>}
             <h1 className="mt-2 font-serif text-5xl md:text-6xl">{q.data.reg?.status === "paid" ? APP_COPY.homePaidTitle : APP_COPY.homePendingTitle}</h1>
             <p className="mt-4 font-serif text-xl text-blush">{EVENT.name}</p>
             <p className="mt-1 text-lavender">{EVENT.theme}</p>
             <p className="mt-4 text-sm text-ivory/90">{EVENT.date}<br />{APP_COPY.timing && <>{APP_COPY.timing}<br /></>}{EVENT.venue}<br />{EVENT.address}</p>
           </section>
           <Pass data={q.data} />
+          {paid && (
+            <section aria-labelledby="next">
+              <h2 id="next" className="font-serif text-3xl">{phase === "today" ? "Today" : phase === "before" ? "Before the Ball" : "After the Ball"}</h2>
+              <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                {steps.map(([t, h, b]) => (
+                  <li key={t}><button onClick={() => go(t)} className={`${card} w-full text-left transition hover:border-blush focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush`}>
+                    <span className="font-serif text-xl">{h} →</span><span className="mt-1 block text-sm text-lavender">{b}</span>
+                  </button></li>
+                ))}
+              </ul>
+            </section>
+          )}
           <section aria-labelledby="ann">
             <h2 id="ann" className="font-serif text-3xl">{APP_COPY.announcementsTitle}</h2>
             {q.data.ann.length === 0 ? <p className="mt-3 text-sm text-lavender/80">No announcements yet. We'll share updates here.</p> : (

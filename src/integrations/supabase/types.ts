@@ -888,6 +888,69 @@ export type Database = {
         }
         Relationships: []
       }
+      speaker_materials: {
+        Row: {
+          created_at: string
+          file_name: string | null
+          file_path: string | null
+          id: string
+          note: string | null
+          speaker_id: string
+          title: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          note?: string | null
+          speaker_id: string
+          title: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          id?: string
+          note?: string | null
+          speaker_id?: string
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      speaker_sharing: {
+        Row: {
+          show_email: boolean
+          show_instagram: boolean
+          show_linkedin: boolean
+          show_website: boolean
+          show_whatsapp: boolean
+          speaker_id: string
+          updated_at: string
+        }
+        Insert: {
+          show_email?: boolean
+          show_instagram?: boolean
+          show_linkedin?: boolean
+          show_website?: boolean
+          show_whatsapp?: boolean
+          speaker_id: string
+          updated_at?: string
+        }
+        Update: {
+          show_email?: boolean
+          show_instagram?: boolean
+          show_linkedin?: boolean
+          show_website?: boolean
+          show_whatsapp?: boolean
+          speaker_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ticket_types: {
         Row: {
           code: string
@@ -1007,6 +1070,21 @@ export type Database = {
           location: string
           organisation: string
           profession: string
+        }[]
+      }
+      speaker_directory: {
+        Args: never
+        Returns: {
+          bio: string
+          email: string
+          full_name: string
+          id: string
+          instagram: string
+          linkedin: string
+          organisation: string
+          profession: string
+          website: string
+          whatsapp: string
         }[]
       }
       staff_confirmed_attendees: {
