@@ -42,7 +42,7 @@ export function AttendeeApp({ userId, email, isSpeaker = false }: { userId: stri
           {tabs.map(([k, l]) => (
             <li key={k}>
               <button onClick={() => setTab(k)} aria-current={tab === k ? "page" : undefined}
-                className={`w-full py-3 text-[11px] uppercase tracking-[0.15em] md:text-xs ${tab === k ? "text-blush md:border-b md:border-blush" : "text-lavender/80 hover:text-ivory"}`}>{l}</button>
+                className={`w-full px-0.5 py-3 text-[10px] uppercase tracking-[0.06em] sm:text-[11px] sm:tracking-[0.15em] md:text-xs ${tab === k ? "text-blush md:border-b md:border-blush" : "text-lavender/80 hover:text-ivory"}`}>{l}</button>
             </li>
           ))}
         </ul>
@@ -244,7 +244,7 @@ function Guests() {
             <p className="text-[11px] uppercase tracking-[0.3em] text-blush">PCH Hackathon</p>
             <h2 className="mt-1 font-serif text-4xl">{APP_COPY.hackathonTitle}</h2>
             <p className="mt-2 text-lavender">Muslim Women Building the Future of Careers in Africa.</p>
-            {q.data.teams.length === 0 ? <p className="mt-3 text-sm text-lavender/80">Teams will be revealed soon.</p> : (
+            {q.data.teams.length === 0 ? <p className="mt-3 text-sm text-lavender/80">Finalist teams pitch live on the day.</p> : (
               <ul className="mt-6 grid gap-4 md:grid-cols-2">
                 {q.data.teams.map((t) => (
                   <li key={t.id} className={`${card} border-rose/30`}>
