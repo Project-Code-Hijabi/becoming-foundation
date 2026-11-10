@@ -162,7 +162,7 @@ function Pass({ data }: { data: { name: string; reg: { attendee_code: string; st
           <Item k="Ticket" v={data.ticket ?? "—"} />
           <Item k="Attendee ID" v={data.reg.attendee_code} mono />
           <Item k="Status" v={active ? "Confirmed" : data.reg.status === "paid" ? "Pass being prepared" : "Payment not confirmed"} />
-          <Item k="Date" v="28 Nov 2026" />
+          <Item k="Date" v="28 Nov 2026 (new date — postponed from 14 Nov)" />
           <Item k="Venue" v="Raybam, Alimosho, Lagos" />
         </dl>
         <div className="flex flex-col items-center justify-center">
