@@ -11,7 +11,7 @@ import {
 
 const title = "Becoming — Project Code-Hijabi Annual Ball 2026";
 const description =
-  "An intimate daytime Ball for Muslim women navigating tech, identity and impact. 14 November 2026, Raybam, Lagos.";
+  "An intimate daytime Ball for Muslim women navigating tech, identity and impact. 28 November 2026, Raybam, Lagos.";
 
 export const Route = createFileRoute("/ball/")({
   head: () => ({

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const title = "Sign in — PCH Annual Ball 2026";
-const description = "Sign in to your Ball pass, programme and connections for Becoming, 14 November 2026.";
+const description = "Sign in to your Ball pass, programme and connections for Becoming, 28 November 2026.";
 
 export const Route = createFileRoute("/ball/app_/login")({
   ssr: false,

@@ -5,7 +5,7 @@ import { usePreviewContent } from "@/features/ball/content";
 import { PreviewBanner } from "@/features/ball/preview-banner";
 
 const title = "Register — Project Code-Hijabi Annual Ball 2026";
-const description = "You're coming. Make your seat at the Pink & Purple Edition official — 14 November 2026, Raybam, Lagos.";
+const description = "You're coming. Make your seat at the Pink & Purple Edition official — 28 November 2026, Raybam, Lagos.";
 
 export const Route = createFileRoute("/ball/register")({
   head: () => ({

@@ -11,9 +11,9 @@ export const Route = createFileRoute("/ball/app")({
   head: () => ({
     meta: [
       { title: "Your Ball — PCH Annual Ball 2026" },
-      { name: "description", content: "Your Ball Pass, programme, connections and Becoming space for 14 November 2026." },
+      { name: "description", content: "Your Ball Pass, programme, connections and Becoming space for 28 November 2026." },
       { property: "og:title", content: "Your Ball — PCH Annual Ball 2026" },
-      { property: "og:description", content: "Your Ball Pass, programme, connections and Becoming space for 14 November 2026." },
+      { property: "og:description", content: "Your Ball Pass, programme, connections and Becoming space for 28 November 2026." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
