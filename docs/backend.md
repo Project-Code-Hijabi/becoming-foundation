@@ -1,6 +1,6 @@
 # Project Code-Hijabi Annual Ball 2026 — Backend
 
-Theme: *Becoming: Muslim Women Navigating Tech, Identity & Impact* · Saturday 14 November 2026, Lagos.
+Theme: *Becoming: Muslim Women Navigating Tech, Identity & Impact* · Saturday 28 November 2026, Lagos.
 
 Status: backend foundation **implemented and security-tested**. No frontend yet. **Flutterwave is NOT integrated.**
 

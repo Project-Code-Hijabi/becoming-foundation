@@ -10,7 +10,7 @@ export const REGISTER_COPY = {
 export const APP_COPY = {
   eventName: "Project Code-Hijabi Annual Ball 2026",
   theme: "Becoming: Muslim Women Navigating Tech, Identity & Impact",
-  date: "Saturday, 14 November 2026",
+  date: "Saturday, 28 November 2026",
   timing: "Guest arrival from 9:00 AM · Programme approximately 9:30 AM – 5:00 PM",
   venue: "Raybam",
   address: "20 Peace Estate Road, Alimosho, Lagos",

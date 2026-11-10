@@ -90,7 +90,8 @@ export function Hero() {
           Becoming
         </h1>
         <p className="rise mt-6 max-w-md font-serif text-lg italic text-blush md:text-2xl" style={{ animationDelay: "5.3s" }}>{EVENT.subtitle}</p>
-        <div className="rise mt-10 flex max-w-full flex-col items-center gap-3 font-sans text-[0.7rem] uppercase tracking-[0.3em] text-rose md:flex-row md:gap-4" style={{ animationDelay: "5.7s" }}>
+        <p role="status" className="rise mt-8 border border-rose/60 bg-plum/60 px-4 py-2 font-sans text-[0.7rem] uppercase tracking-[0.25em] text-blush" style={{ animationDelay: "5.5s" }}>New date · Postponed from 14 Nov to Saturday 28 November 2026</p>
+        <div className="rise mt-6 flex max-w-full flex-col items-center gap-3 font-sans text-[0.7rem] uppercase tracking-[0.3em] text-rose md:flex-row md:gap-4" style={{ animationDelay: "5.7s" }}>
           <span>{EVENT.dayLabel}</span>
           <span className="hidden h-1 w-1 rotate-45 bg-rose md:block" aria-hidden />
           <a href={EVENT.mapsUrl} target="_blank" rel="noreferrer" className="leading-relaxed underline-offset-4 hover:text-blush hover:underline">{EVENT.venue}, {EVENT.address}</a>

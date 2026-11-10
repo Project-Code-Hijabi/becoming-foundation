@@ -72,7 +72,7 @@ async function drawBadge(doc: import("jspdf").jsPDF, p: LanyardPass, x: number, 
   doc.setFont("courier", "normal"); doc.setFontSize(9); doc.setTextColor(...PURPLE);
   doc.text(p.code, x + w / 2, y + 129, { align: "center" });
   doc.setFont("helvetica", "normal"); doc.setFontSize(7.5);
-  doc.text("Saturday 14 November 2026  ·  Raybam, Lagos", x + w / 2, y + 138, { align: "center" });
+  doc.text("Saturday 28 November 2026  ·  Raybam, Lagos", x + w / 2, y + 138, { align: "center" });
   doc.setTextColor(...PINK); doc.text("BECOMING", x + w / 2, y + 143, { align: "center" });
 }
 

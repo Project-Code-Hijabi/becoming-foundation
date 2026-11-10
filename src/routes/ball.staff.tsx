@@ -68,7 +68,7 @@ function Staff() {
         <button onClick={signOut} className="text-xs text-lavender underline">Sign out</button>
       </header>
       <main className="mx-auto max-w-lg space-y-5 p-4">
-        <p className="text-sm text-lavender">Saturday, 14 November 2026 · Raybam, 20 Peace Estate Road, Alimosho, Lagos</p>
+        <p className="text-sm text-lavender">Saturday, 28 November 2026 · Raybam, 20 Peace Estate Road, Alimosho, Lagos</p>
         <State {...stats}>
           {s && (
             <div className="grid grid-cols-3 gap-2 text-center">

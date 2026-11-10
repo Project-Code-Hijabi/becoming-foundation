@@ -8,7 +8,7 @@ import { SpeakerResources, SpeakerStudio } from "./speakers";
 /** Which stage of the event we're in, by Lagos calendar date. */
 export function eventPhase(now = new Date()): "before" | "today" | "after" {
   const d = now.toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
-  return d < "2026-11-14" ? "before" : d === "2026-11-14" ? "today" : "after";
+  return d < "2026-11-28" ? "before" : d === "2026-11-28" ? "today" : "after";
 }
 export function daysToGo(now = new Date()) {
   const d = now.toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
@@ -162,7 +162,7 @@ function Pass({ data }: { data: { name: string; reg: { attendee_code: string; st
           <Item k="Ticket" v={data.ticket ?? "—"} />
           <Item k="Attendee ID" v={data.reg.attendee_code} mono />
           <Item k="Status" v={active ? "Confirmed" : data.reg.status === "paid" ? "Pass being prepared" : "Payment not confirmed"} />
-          <Item k="Date" v="14 Nov 2026" />
+          <Item k="Date" v="28 Nov 2026 (new date — postponed from 14 Nov)" />
           <Item k="Venue" v="Raybam, Alimosho, Lagos" />
         </dl>
         <div className="flex flex-col items-center justify-center">
