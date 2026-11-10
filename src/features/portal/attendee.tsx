@@ -12,7 +12,7 @@ export function eventPhase(now = new Date()): "before" | "today" | "after" {
 }
 export function daysToGo(now = new Date()) {
   const d = now.toLocaleDateString("en-CA", { timeZone: "Africa/Lagos" });
-  return Math.round((Date.UTC(2026, 10, 14) - Date.parse(d + "T00:00:00Z")) / 86400000);
+  return Math.round((Date.UTC(2026, 10, 28) - Date.parse(d + "T00:00:00Z")) / 86400000);
 }
 
 const EVENT = { get name() { return APP_COPY.eventName; }, get theme() { return APP_COPY.theme; }, get date() { return APP_COPY.date; }, get venue() { return APP_COPY.venue; }, get address() { return APP_COPY.address; } };
