@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { inviteSpeaker, listSpeakers } from "@/lib/admin.functions";
 import { State, useLoad, must } from "./shared";
+import { Button } from "@/components/ui/button";
 
 const BUCKET = "speaker-materials";
 type Material = { id: string; speaker_id: string; title: string; note: string | null; url: string | null; file_path: string | null; file_name: string | null; created_at: string };
@@ -39,7 +40,7 @@ export function AdminSpeakers() {
     <div className="space-y-5">
       <form onSubmit={send} className={`${aCard} space-y-3`}>
         <h2 className="font-semibold">Add a speaker</h2>
-        <p className="text-sm text-muted-foreground">She gets a free Ball Pass with her own QR code (no payment) and a Speaker page in the app where she shares slides and chooses which contacts guests can see. New emails receive an invite to set their own password.</p>
+        <p className="text-sm text-muted-foreground">She receives a secure email, chooses her password and goes straight to her Speaker page. Her Ball Pass is complimentary; no attendee registration or checkout. Existing accounts receive a password-setup email too and can keep their current password.</p>
         <div className="flex flex-wrap gap-2">
           <label htmlFor="spe" className="sr-only">Speaker email</label>
           <input id="spe" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="speaker@email.com" className={`${aField} max-w-sm`} />
@@ -69,11 +70,12 @@ const btn = "inline-flex items-center justify-center rounded-sm bg-rose px-4 py-
 /* ---------- Speaker's own page ---------- */
 export function SpeakerStudio({ userId }: { userId: string }) {
   const d = useLoad(async () => {
-    const [m, s] = await Promise.all([
+    const [m, s, p] = await Promise.all([
       supabase.from("speaker_materials").select("*").eq("speaker_id", userId).order("created_at", { ascending: false }),
       supabase.from("speaker_sharing").select("*").eq("speaker_id", userId).maybeSingle(),
+      supabase.from("profiles").select("full_name").eq("id", userId).maybeSingle(),
     ]);
-    return { materials: must(m) as Material[], share: must(s) };
+    return { materials: must(m) as Material[], share: must(s), name: must(p)?.full_name ?? "" };
   }, [userId]);
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
@@ -81,6 +83,18 @@ export function SpeakerStudio({ userId }: { userId: string }) {
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+
+  async function saveName(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const name = String(new FormData(e.currentTarget).get("full_name") ?? "").trim();
+    if (!name || name.length > 200) { setMsg("Add your full name, up to 200 characters."); return; }
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("profiles").update({ full_name: name }).eq("id", userId);
+      setMsg(error ? "Your name couldn't be saved. Try again." : "Your name is saved for your Ball Pass and speaker page.");
+      if (!error) void d.reload();
+    } finally { setBusy(false); }
+  }
 
   async function add(e: React.FormEvent) {
     e.preventDefault(); setMsg(null);
@@ -120,6 +134,11 @@ export function SpeakerStudio({ userId }: { userId: string }) {
       <State {...d}>
         {d.data && (
           <>
+            <form onSubmit={saveName} className={`${card} space-y-3`}>
+              <label className="block text-sm">Your full name<input name="full_name" required maxLength={200} defaultValue={d.data.name} className={`${field} mt-1`} autoComplete="name" /></label>
+              <Button className={btn} disabled={busy}>Save name</Button>
+              {msg && <p role="status" className="text-sm text-blush">{msg}</p>}
+            </form>
             <form onSubmit={add} className={`${card} space-y-3`}>
               <h2 className="font-serif text-2xl">Share something</h2>
               <label className="block text-sm">Title<input required maxLength={200} value={title} onChange={(e) => setTitle(e.target.value)} className={`${field} mt-1`} placeholder="e.g. Keynote slides" /></label>
@@ -148,7 +167,7 @@ export function SpeakerStudio({ userId }: { userId: string }) {
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {SOCIALS.map(([k, l]) => (
                   <label key={k} className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" checked={!!d.data!.share?.[k]} onChange={(e) => toggle(k, e.target.checked)} /> Show my {l}
+                    <input type="checkbox" checked={!!d.data?.share?.[k]} onChange={(e) => toggle(k, e.target.checked)} /> Show my {l}
                   </label>
                 ))}
               </div>
@@ -177,7 +196,7 @@ export function SpeakerResources() {
       <State {...d}>
         <ul className="mt-4 grid gap-4 md:grid-cols-2">
           {d.data?.speakers.map((s) => {
-            const mine = d.data!.materials.filter((m) => m.speaker_id === s.id);
+            const mine = d.data?.materials.filter((m) => m.speaker_id === s.id) ?? [];
             const links = [
               s.instagram && ["Instagram", s.instagram.startsWith("http") ? s.instagram : `https://instagram.com/${s.instagram.replace(/^@/, "")}`],
               s.linkedin && ["LinkedIn", s.linkedin.startsWith("http") ? s.linkedin : `https://${s.linkedin}`],
@@ -195,8 +214,8 @@ export function SpeakerResources() {
                     {mine.map((m) => (
                       <li key={m.id}>
                         {m.file_path
-                          ? <button onClick={() => openFile(m.file_path!)} className="text-left text-ivory underline underline-offset-4">⇩ {m.title}</button>
-                          : <a href={m.url!} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">↗ {m.title}</a>}
+                          ? <Button variant="link" onClick={() => { if (m.file_path) void openFile(m.file_path); }} className="h-auto p-0 text-left text-ivory underline underline-offset-4">⇩ {m.title}</Button>
+                          : m.url ? <a href={m.url} target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">↗ {m.title}</a> : null}
                         {m.note && <span className="block text-xs text-lavender/80">{m.note}</span>}
                       </li>
                     ))}
