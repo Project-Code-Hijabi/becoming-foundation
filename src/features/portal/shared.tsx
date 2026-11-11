@@ -7,7 +7,7 @@ export type Role = "super_admin" | "admin" | "staff" | "attendee" | "speaker";
 /** Client-side route gate. Real enforcement is RLS + server functions; this only decides which screen to show. */
 export async function gate(path: string, need?: "admin" | "staff") {
   const { data } = await supabase.auth.getUser();
-  if (!data.user) throw redirect({ to: "/ball/app/login", search: { redirect: path } });
+  if (!data.user) throw redirect({ to: "/ball/app/login", search: { redirect: path, setup: undefined } });
   const { data: rows } = await supabase.from("user_roles").select("role").eq("user_id", data.user.id);
   const roles = (rows ?? []).map((r) => r.role as Role);
   const isAdmin = roles.includes("admin") || roles.includes("super_admin");
