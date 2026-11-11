@@ -42,7 +42,7 @@ export const inviteStaff = createServerFn({ method: "POST" })
     if (existing) userId = existing.id;
     else {
       // Invite email lets the staff member choose their own password; admins never set it.
-      const { data: inv, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, { redirectTo: `${data.origin}/ball/app/login?setup=speaker` });
+      const { data: inv, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, { redirectTo: `${data.origin}/ball/app/login` });
       if (error || !inv.user) {
         console.error("invite failed", error?.message);
         return { result: "error", message: "We couldn't send that invite. Check the email and try again." };
@@ -109,7 +109,7 @@ export const inviteSpeaker = createServerFn({ method: "POST" })
     const { data: existing } = await supabaseAdmin.from("profiles").select("id").ilike("email", data.email).maybeSingle();
     if (existing) userId = existing.id;
     else {
-      const { data: inv, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, { redirectTo: `${data.origin}/ball/app/login` });
+      const { data: inv, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, { redirectTo: `${data.origin}/ball/app/login?setup=speaker` });
       if (error || !inv.user) { console.error("speaker invite failed", error?.message); return { result: "error", message: "We couldn't send that invite. Check the email and try again." }; }
       userId = inv.user.id; invited = true;
     }
