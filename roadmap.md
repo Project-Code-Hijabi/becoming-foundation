@@ -1,4 +1,7 @@
 # Requested updates
+- [x] Simplify speaker invitation/password setup and direct access without attendee registration; setup screen checked signed-in, no real emails sent.
+- [x] Apply supplied speaker/attendee badge artwork to printable passes; both layouts visually checked and Unicode names retained.
+- [ ] Verify a new speaker's actual inbox invitation and password completion; requires an eligible recipient and authorised delivery test.
 - [ ] Test every existing Admin Pages control and public readback; fix confirmed errors.
 - [ ] Test projectcodehijabi@gmail.com staff access assignment; report invitation limitations for an existing account.
 - [ ] Verify Masturah's free registration, active QR, staff access, zero revenue, deadline and judge listing.

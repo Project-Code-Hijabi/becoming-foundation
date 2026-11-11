@@ -109,7 +109,7 @@ export const inviteSpeaker = createServerFn({ method: "POST" })
     const { data: existing } = await supabaseAdmin.from("profiles").select("id").ilike("email", data.email).maybeSingle();
     if (existing) userId = existing.id;
     else {
-      const { data: inv, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, { redirectTo: `${data.origin}/ball/app/login` });
+      const { data: inv, error } = await supabaseAdmin.auth.admin.inviteUserByEmail(data.email, { redirectTo: `${data.origin}/ball/app/login?setup=speaker` });
       if (error || !inv.user) { console.error("speaker invite failed", error?.message); return { result: "error", message: "We couldn't send that invite. Check the email and try again." }; }
       userId = inv.user.id; invited = true;
     }
@@ -131,8 +131,13 @@ export const inviteSpeaker = createServerFn({ method: "POST" })
       if (res.error) { console.error("speaker pass failed", res.error.message); return { result: "error", message: "The speaker role was added, but her pass couldn't be created. Try again." }; }
       regId = res.data.id;
     }
-    await supabaseAdmin.from("attendee_badges").upsert({ registration_id: regId, user_id: userId }, { onConflict: "registration_id", ignoreDuplicates: true });
+    const { error: badgeError } = await supabaseAdmin.from("attendee_badges").upsert({ registration_id: regId, user_id: userId }, { onConflict: "registration_id", ignoreDuplicates: true });
+    if (badgeError) return { result: "error", message: "Speaker access was added, but her pass couldn't be issued. Try again." };
+    if (!invited) {
+      const { error: mailError } = await supabaseAdmin.auth.resetPasswordForEmail(data.email, { redirectTo: `${data.origin}/ball/app/login?setup=speaker` });
+      if (mailError) return { result: "error", message: "Her speaker page and free pass are ready, but the access email couldn't be sent. She can sign in with her existing password; try again to resend the email." };
+    }
     return invited
       ? { result: "invited", message: `Invite sent to ${data.email}. She'll set her own password, then find her free Ball Pass and Speaker page in the app.` }
-      : { result: "granted", message: `${data.email} is now a speaker with a free Ball Pass. She signs in with her existing password.` };
+      : { result: "granted", message: `${data.email} has speaker access and a free Ball Pass. A secure password-setup email was sent; she can also sign in with her existing password. No registration or payment is required.` };
   });

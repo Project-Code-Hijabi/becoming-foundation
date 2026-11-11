@@ -1,7 +1,8 @@
 import { useState } from "react";
-import QRCode from "qrcode";
 import { supabase } from "@/integrations/supabase/client";
 import { useLoad, must, State } from "./shared";
+import { buildBadgePdf } from "./badge-pdf";
+import { Button } from "@/components/ui/button";
 
 /** One printable pass. Only paid registrations with an active badge are included. */
 export type LanyardPass = { name: string; code: string; ticket: string; role: string | null; token: string };
@@ -37,64 +38,8 @@ export function pdfSafe(s: string) {
   return [...s].map((ch) => (ch.charCodeAt(0) <= 255 ? ch : ch.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^\x00-\xff]/g, ""))).join("");
 }
 
-const PURPLE: [number, number, number] = [53, 18, 79];
-const PINK: [number, number, number] = [201, 54, 130];
-const IVORY: [number, number, number] = [255, 248, 252];
-
-/** Draws one 105×148mm (A6) badge with its top-left at x,y. */
-async function drawBadge(doc: import("jspdf").jsPDF, p: LanyardPass, x: number, y: number) {
-  const w = 105, h = 148;
-  doc.setFillColor(...IVORY); doc.rect(x, y, w, h, "F");
-  doc.setFillColor(...PURPLE); doc.rect(x, y, w, 30, "F");
-  doc.setFillColor(...PINK); doc.rect(x, y + 30, w, 1.5, "F");
-  // lanyard hole guide
-  doc.setDrawColor(...IVORY); doc.setLineWidth(0.3); doc.roundedRect(x + w / 2 - 8, y + 4, 16, 3, 1.5, 1.5, "S");
-  doc.setTextColor(...IVORY); doc.setFont("helvetica", "normal"); doc.setFontSize(7);
-  doc.text("PROJECT CODE-HIJABI  ·  PINK & PURPLE EDITION", x + w / 2, y + 14, { align: "center" });
-  doc.setFont("times", "bold"); doc.setFontSize(16);
-  doc.text("ANNUAL BALL 2026", x + w / 2, y + 23, { align: "center" });
-
-  // Name: shrink until it fits on at most two lines.
-  const name = pdfSafe(p.name);
-  doc.setTextColor(...PURPLE); doc.setFont("times", "bold");
-  let size = 26, lines: string[] = [];
-  for (; size >= 12; size -= 1) { doc.setFontSize(size); lines = doc.splitTextToSize(name, w - 14); if (lines.length <= 2) break; }
-  const lh = size * 0.42;
-  lines.slice(0, 2).forEach((l, i) => doc.text(l, x + w / 2, y + 44 + i * lh, { align: "center" }));
-  let cy = y + 44 + Math.min(lines.length, 2) * lh;
-
-  doc.setFont("helvetica", "bold"); doc.setFontSize(8); doc.setTextColor(...PINK);
-  doc.text(pdfSafe((p.role ?? p.ticket ?? "").toUpperCase()), x + w / 2, cy + 1, { align: "center" });
-
-  const qr = await QRCode.toDataURL(p.token, { margin: 1, width: 600, errorCorrectionLevel: "M", color: { dark: "#35124F", light: "#FFF8FC" } });
-  const q = 58;
-  doc.addImage(qr, "PNG", x + (w - q) / 2, y + 66, q, q);
-  doc.setFont("courier", "normal"); doc.setFontSize(9); doc.setTextColor(...PURPLE);
-  doc.text(p.code, x + w / 2, y + 129, { align: "center" });
-  doc.setFont("helvetica", "normal"); doc.setFontSize(7.5);
-  doc.text("Saturday 28 November 2026  ·  Raybam, Lagos", x + w / 2, y + 138, { align: "center" });
-  doc.setTextColor(...PINK); doc.text("BECOMING", x + w / 2, y + 143, { align: "center" });
-}
-
 export async function buildLanyardPdf(passes: LanyardPass[], layout: "single" | "sheet") {
-  const { jsPDF } = await import("jspdf");
-  if (layout === "single") {
-    const doc = new jsPDF({ unit: "mm", format: "a6" });
-    for (let i = 0; i < passes.length; i++) { if (i) doc.addPage("a6"); await drawBadge(doc, passes[i]!, 0, 0); }
-    return doc;
-  }
-  // A4 portrait holds a 2×2 grid of A6 badges exactly; light cut lines between them.
-  const doc = new jsPDF({ unit: "mm", format: "a4" });
-  for (let i = 0; i < passes.length; i++) {
-    const slot = i % 4;
-    if (i && slot === 0) doc.addPage("a4");
-    await drawBadge(doc, passes[i]!, (slot % 2) * 105, Math.floor(slot / 2) * 148.5);
-    if (slot === 3 || i === passes.length - 1) {
-      doc.setDrawColor(201, 167, 232); doc.setLineWidth(0.2); doc.setLineDashPattern([2, 2], 0);
-      doc.line(105, 0, 105, 297); doc.line(0, 148.5, 210, 148.5); doc.setLineDashPattern([], 0);
-    }
-  }
-  return doc;
+  return buildBadgePdf(passes, layout);
 }
 
 export function Lanyards() {
@@ -117,10 +62,10 @@ export function Lanyards() {
         <p className="text-sm text-muted-foreground">Every confirmed guest with an active Ball Pass: full name and the same QR code the door scanner checks. Treat printed passes like tickets — anyone holding one can be checked in.</p>
         <fieldset className="flex flex-wrap gap-4 text-sm">
           <legend className="sr-only">Layout</legend>
-          <label className="flex items-center gap-2"><input type="radio" name="layout" checked={layout === "single"} onChange={() => setLayout("single")} />One pass per page (A6 lanyard size)</label>
+          <label className="flex items-center gap-2"><input type="radio" name="layout" checked={layout === "single"} onChange={() => setLayout("single")} />One pass per page (54 × 86 mm, 3 mm bleed)</label>
           <label className="flex items-center gap-2"><input type="radio" name="layout" checked={layout === "sheet"} onChange={() => setLayout("sheet")} />4 passes per A4 sheet (cut along dotted lines)</label>
         </fieldset>
-        <button className={btn} disabled={busy || !d.data?.length} onClick={() => download(d.data!, `pch-ball-2026-passes-${layout}.pdf`)}>{busy ? "Making PDF…" : `Download all ${d.data?.length ?? 0} passes`}</button>
+        <Button className={btn} disabled={busy || !d.data?.length} onClick={() => { if (d.data?.length) void download(d.data, `pch-ball-2026-passes-${layout}.pdf`); }}>{busy ? "Making PDF…" : `Download all ${d.data?.length ?? 0} passes`}</Button>
         {msg && <p role="status" className="text-sm">{msg}</p>}
       </section>
       <State {...d} tone="light" empty={d.data?.length === 0 && "No confirmed passes yet."}>
