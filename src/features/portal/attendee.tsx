@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { APP_COPY } from "@/features/ball/copy";
 import { State, useLoad, must, initials, fmtTime, signOut } from "./shared";
 import { SpeakerResources, SpeakerStudio } from "./speakers";
+import { initialPortalTab } from "@/lib/speaker-setup";
 
 /** Which stage of the event we're in, by Lagos calendar date. */
 export function eventPhase(now = new Date()): "before" | "today" | "after" {
@@ -29,7 +30,7 @@ const btn = "inline-flex items-center justify-center rounded-sm bg-rose px-4 py-
 const ghost = "inline-flex items-center justify-center rounded-sm border border-lavender/40 px-4 py-2 text-sm text-lavender transition hover:border-blush hover:text-ivory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blush disabled:opacity-50";
 
 export function AttendeeApp({ userId, email, isSpeaker = false }: { userId: string; email: string; isSpeaker?: boolean }) {
-  const [tab, setTab] = useState<Tab>("home");
+  const [tab, setTab] = useState<Tab>(() => initialPortalTab(isSpeaker));
   const tabs: [Tab, string][] = isSpeaker ? [...TABS, ["speaker", "Speaker"]] : TABS;
   return (
     <div className="velvet-bg grain min-h-screen pb-24 text-ivory md:pb-10">
