@@ -12,3 +12,5 @@
 - Staff attendance rosters must use the role-checked `staff_confirmed_attendees` RPC and return only paid attendees' names, ticket names, attendee codes and check-in times; QR lookup remains the check-in authority to avoid exposing contacts or allowing roster-based admission.
 - Admin operational screens use semantic foreground and muted-foreground tokens on existing dark surfaces so shared public-page tokens stay unchanged.
 - Admin page images are stored as "asset:<path>" in site_content, uploaded to private event-assets with an event_asset_publications row, and signed server-side in getSiteContent (public buckets are blocked by workspace policy).
+- Speaker invitations carry durable setup intent in the existing login URL; intent never grants privileges, and authenticated roles select the initial studio tab to avoid the attendee checkout flow.
+- Printable badges use supplied artwork with embedded Unicode name fonts and existing admission QR tokens; preserve trim/bleed sizing and label the QR for entry rather than networking.
